@@ -12,7 +12,13 @@ export type WritingType =
   | 'bidding'
   | 'custom';
 
-export type Style = 'formal' | 'concise' | 'professional' | 'friendly' | 'promotional' | 'government';
+export type Style =
+  | 'formal'
+  | 'concise'
+  | 'professional'
+  | 'friendly'
+  | 'promotional'
+  | 'government';
 
 export type WritingStatus = 'draft' | 'planning' | 'writing' | 'polishing' | 'done' | 'error';
 
@@ -37,6 +43,7 @@ export interface Document {
   filePath: string;
   fileHash: string;
   status: DocStatus;
+  errorMessage?: string | null;
   chunkCount: number;
   createdAt: string;
   updatedAt: string;

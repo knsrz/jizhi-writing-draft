@@ -1,6 +1,6 @@
+import type { Document, KnowledgeBase, UploadProgress } from '@app/core';
 import { create } from 'zustand';
 import { api } from '../lib/api';
-import type { KnowledgeBase, Document, UploadProgress } from '@app/core';
 
 interface KnowledgeState {
   bases: KnowledgeBase[];
@@ -11,6 +11,7 @@ interface KnowledgeState {
   createBase: (name: string, description: string) => Promise<void>;
   deleteBase: (id: string) => Promise<void>;
   loadDocuments: (kbId: string) => Promise<void>;
+  deleteDocument: (kbId: string, docId: string) => Promise<void>;
   uploadDocument: (kbId: string) => Promise<void>;
   setCurrentBase: (base: KnowledgeBase | null) => void;
 }
@@ -43,11 +44,24 @@ export const useKnowledgeStore = create<KnowledgeState>((set) => ({
     set({ documents: docs as Document[] });
   },
 
-  uploadDocument: async (kbId) => {
-    api.onUploadProgress((p) => set({ uploadProgress: p as UploadProgress }));
-    await api.uploadDocument(kbId);
+  deleteDocument: async (kbId, docId) => {
+    await api.deleteDocument(docId);
     const docs = await api.listDocuments(kbId);
-    set({ documents: docs as Document[], uploadProgress: null });
+    const bases = await api.listKnowledgeBases();
+    set({ documents: docs as Document[], bases: bases as KnowledgeBase[] });
+  },
+
+  uploadDocument: async (kbId) => {
+    const cleanup = api.onUploadProgress((p) => set({ uploadProgress: p as UploadProgress }));
+    try {
+      await api.uploadDocument(kbId);
+      const docs = await api.listDocuments(kbId);
+      const bases = await api.listKnowledgeBases();
+      set({ documents: docs as Document[], bases: bases as KnowledgeBase[], uploadProgress: null });
+    } finally {
+      cleanup();
+      set({ uploadProgress: null });
+    }
   },
 
   setCurrentBase: (base) => set({ currentBase: base }),

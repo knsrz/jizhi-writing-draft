@@ -50,13 +50,29 @@ export function registerSettingsIpc(): void {
     async (
       _,
       config: {
+        kind?: 'writing' | 'embedding';
         baseUrl: string;
         apiKey?: string;
-        writingModel: string;
+        model?: string;
+        writingModel?: string;
       },
     ) => {
-      const resolved = buildConnectionTestConfig(config, await keychain.getApiKey());
-      return testConnection(resolved.baseUrl, resolved.apiKey, resolved.writingModel);
+      const kind = config.kind ?? 'writing';
+      const savedEndpoint =
+        kind === 'embedding'
+          ? await keychain.getEmbeddingApiConfig()
+          : await keychain.getWritingApiConfig();
+      const saved = savedEndpoint
+        ? {
+            provider: savedEndpoint.provider,
+            baseUrl: savedEndpoint.baseUrl,
+            apiKey: savedEndpoint.apiKey,
+            writingModel: kind === 'writing' ? savedEndpoint.model : '',
+            embeddingModel: kind === 'embedding' ? savedEndpoint.model : '',
+          }
+        : null;
+      const resolved = buildConnectionTestConfig(config, saved);
+      return testConnection(resolved.baseUrl, resolved.apiKey, resolved.model, resolved.kind);
     },
   );
 }

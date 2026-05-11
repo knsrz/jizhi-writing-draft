@@ -8,6 +8,7 @@ export const api = {
     w.api.createKnowledgeBase(name, description),
   deleteKnowledgeBase: (id: string) => w.api.deleteKnowledgeBase(id),
   listDocuments: (kbId: string) => w.api.listDocuments(kbId),
+  deleteDocument: (docId: string) => w.api.deleteDocument(docId),
   uploadDocument: (kbId: string) => w.api.uploadDocument(kbId),
   onUploadProgress: (cb: (p: unknown) => void) => w.api.onUploadProgress(cb),
   searchKnowledgeBase: (kbId: string, query: string) => w.api.searchKnowledgeBase(kbId, query),

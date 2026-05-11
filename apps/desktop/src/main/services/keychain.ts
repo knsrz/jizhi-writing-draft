@@ -123,7 +123,7 @@ export const keychain = {
     return {
       provider,
       baseUrl,
-      apiKey: decryptApiKey(map, 'embedding'),
+      apiKey: decryptApiKey(map, 'embedding') || decryptApiKey(map, 'writing'),
       model: map.get('embedding_model') || 'text-embedding-3-small',
     };
   },

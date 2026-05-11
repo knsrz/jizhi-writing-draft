@@ -19,9 +19,10 @@ describe('buildConnectionTestConfig', () => {
     );
 
     expect(config).toEqual({
+      kind: 'writing',
       baseUrl: 'https://api.example.test/v1',
       apiKey: 'saved-key',
-      writingModel: 'gpt-test',
+      model: 'gpt-test',
     });
   });
 
@@ -42,5 +43,30 @@ describe('buildConnectionTestConfig', () => {
     );
 
     expect(config.apiKey).toBe('fresh-key');
+  });
+
+  it('keeps embedding connection tests on the embedding model kind', () => {
+    const config = buildConnectionTestConfig(
+      {
+        kind: 'embedding',
+        baseUrl: 'https://openrouter.ai/api/v1',
+        apiKey: '',
+        model: 'qwen/qwen3-embedding-4b',
+      },
+      {
+        provider: 'openrouter',
+        baseUrl: 'https://openrouter.ai/api/v1',
+        apiKey: 'saved-key',
+        writingModel: 'openai/gpt-4o',
+        embeddingModel: 'text-embedding-3-small',
+      },
+    );
+
+    expect(config).toEqual({
+      kind: 'embedding',
+      baseUrl: 'https://openrouter.ai/api/v1',
+      apiKey: 'saved-key',
+      model: 'qwen/qwen3-embedding-4b',
+    });
   });
 });

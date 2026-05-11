@@ -1,7 +1,9 @@
 export interface ConnectionTestInput {
+  kind?: 'writing' | 'embedding';
   baseUrl: string;
   apiKey?: string;
-  writingModel: string;
+  model?: string;
+  writingModel?: string;
 }
 
 export interface SavedModelConfig {
@@ -15,10 +17,15 @@ export interface SavedModelConfig {
 export function buildConnectionTestConfig(
   input: ConnectionTestInput,
   saved: SavedModelConfig | null,
-): Required<ConnectionTestInput> {
+): { kind: 'writing' | 'embedding'; baseUrl: string; apiKey: string; model: string } {
+  const kind = input.kind ?? 'writing';
+  const inputModel = input.model || input.writingModel;
+  const savedModel = kind === 'embedding' ? saved?.embeddingModel : saved?.writingModel;
+
   return {
+    kind,
     baseUrl: input.baseUrl || saved?.baseUrl || 'https://api.openai.com/v1',
     apiKey: input.apiKey?.trim() || saved?.apiKey || '',
-    writingModel: input.writingModel || saved?.writingModel || 'gpt-4o',
+    model: inputModel || savedModel || (kind === 'embedding' ? 'text-embedding-3-small' : 'gpt-4o'),
   };
 }

@@ -31,11 +31,11 @@ export function chunkText(input: ChunkInput): { text: string; metadata: ChunkMet
       }
     }
 
-    if (currentText.length + trimmed.length > MAX_CHUNK_CHARS) {
+    if (currentText && currentText.length + trimmed.length > MAX_CHUNK_CHARS) {
       chunks.push({ text: currentText.trim(), metadata: { ...metadata, heading } });
-      currentText = currentText.slice(-OVERLAP_CHARS) + '\n\n' + trimmed;
+      currentText = `${currentText.slice(-OVERLAP_CHARS)}\n\n${trimmed}`;
     } else {
-      currentText = currentText ? currentText + '\n\n' + trimmed : trimmed;
+      currentText = currentText ? `${currentText}\n\n${trimmed}` : trimmed;
     }
   }
 

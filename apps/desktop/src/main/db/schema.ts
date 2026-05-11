@@ -1,4 +1,4 @@
-import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
+import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 
 export const knowledgeBases = sqliteTable('knowledge_bases', {
   id: text('id').primaryKey(),
@@ -13,12 +13,15 @@ export const knowledgeBases = sqliteTable('knowledge_bases', {
 
 export const documents = sqliteTable('documents', {
   id: text('id').primaryKey(),
-  knowledgeBaseId: text('knowledge_base_id').notNull().references(() => knowledgeBases.id, { onDelete: 'cascade' }),
+  knowledgeBaseId: text('knowledge_base_id')
+    .notNull()
+    .references(() => knowledgeBases.id, { onDelete: 'cascade' }),
   fileName: text('file_name').notNull(),
   fileType: text('file_type').notNull(),
   filePath: text('file_path').notNull(),
   fileHash: text('file_hash').notNull(),
   status: text('status').default('pending'),
+  errorMessage: text('error_message'),
   chunkCount: integer('chunk_count').default(0),
   createdAt: text('created_at').notNull(),
   updatedAt: text('updated_at').notNull(),
@@ -26,8 +29,12 @@ export const documents = sqliteTable('documents', {
 
 export const documentChunks = sqliteTable('document_chunks', {
   id: text('id').primaryKey(),
-  documentId: text('document_id').notNull().references(() => documents.id, { onDelete: 'cascade' }),
-  knowledgeBaseId: text('knowledge_base_id').notNull().references(() => knowledgeBases.id, { onDelete: 'cascade' }),
+  documentId: text('document_id')
+    .notNull()
+    .references(() => documents.id, { onDelete: 'cascade' }),
+  knowledgeBaseId: text('knowledge_base_id')
+    .notNull()
+    .references(() => knowledgeBases.id, { onDelete: 'cascade' }),
   chunkIndex: integer('chunk_index').notNull(),
   content: text('content').notNull(),
   tokenCount: integer('token_count').default(0),
@@ -51,7 +58,9 @@ export const writingProjects = sqliteTable('writing_projects', {
 
 export const writingVersions = sqliteTable('writing_versions', {
   id: text('id').primaryKey(),
-  projectId: text('project_id').notNull().references(() => writingProjects.id, { onDelete: 'cascade' }),
+  projectId: text('project_id')
+    .notNull()
+    .references(() => writingProjects.id, { onDelete: 'cascade' }),
   versionNumber: integer('version_number').notNull(),
   content: text('content').notNull(),
   wordCount: integer('word_count').default(0),

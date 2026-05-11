@@ -1,8 +1,8 @@
+import { mkdirSync } from 'node:fs';
+import { join } from 'node:path';
 import Database from 'better-sqlite3';
 import { drizzle } from 'drizzle-orm/better-sqlite3';
 import { app } from 'electron';
-import { join } from 'node:path';
-import { mkdirSync } from 'node:fs';
 import * as schema from './schema.js';
 
 let dbInstance: ReturnType<typeof drizzle> | null = null;
@@ -41,6 +41,7 @@ export function initDatabase(): ReturnType<typeof drizzle> {
       file_path TEXT NOT NULL,
       file_hash TEXT NOT NULL,
       status TEXT DEFAULT 'pending',
+      error_message TEXT,
       chunk_count INTEGER DEFAULT 0,
       created_at TEXT NOT NULL,
       updated_at TEXT NOT NULL
@@ -86,6 +87,13 @@ export function initDatabase(): ReturnType<typeof drizzle> {
       value TEXT NOT NULL
     );
   `);
+
+  const documentColumns = sqlite.prepare('PRAGMA table_info(documents)').all() as {
+    name: string;
+  }[];
+  if (!documentColumns.some((column) => column.name === 'error_message')) {
+    sqlite.exec('ALTER TABLE documents ADD COLUMN error_message TEXT;');
+  }
 
   dbInstance = drizzle(sqlite, { schema });
   return dbInstance;

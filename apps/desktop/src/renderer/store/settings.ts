@@ -112,9 +112,10 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     const { writing } = get();
     set((state) => ({ testing: 'writing', testResult: { ...state.testResult, writing: null } }));
     const result = await api.testApiConnection({
+      kind: 'writing',
       baseUrl: writing.baseUrl,
       apiKey: apiKey?.trim() || '',
-      writingModel: writing.model,
+      model: writing.model,
     });
     set((state) => ({
       testing: null,
@@ -129,9 +130,10 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
       testResult: { ...state.testResult, embedding: null },
     }));
     const result = await api.testApiConnection({
+      kind: 'embedding',
       baseUrl: embedding.baseUrl,
       apiKey: apiKey?.trim() || '',
-      writingModel: embedding.model,
+      model: embedding.model,
     });
     set((state) => ({
       testing: null,
