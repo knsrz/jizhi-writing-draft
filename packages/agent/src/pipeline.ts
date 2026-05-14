@@ -27,13 +27,15 @@ export async function runPipeline(
   try {
     throwIfAborted(options?.signal);
     callbacks.onProgress(5);
-    const plan = await generatePlan(
-      writingModel,
-      request,
-      retriever ?? undefined,
-      request.knowledgeBaseId ?? undefined,
-      options,
-    );
+    const plan =
+      request.plan ??
+      (await generatePlan(
+        writingModel,
+        request,
+        retriever ?? undefined,
+        request.knowledgeBaseId ?? undefined,
+        options,
+      ));
     throwIfAborted(options?.signal);
     callbacks.onPlanReady(plan);
     callbacks.onProgress(10);

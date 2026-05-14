@@ -20,7 +20,14 @@ export type Style =
   | 'promotional'
   | 'government';
 
-export type WritingStatus = 'draft' | 'planning' | 'writing' | 'polishing' | 'done' | 'error';
+export type WritingStatus =
+  | 'draft'
+  | 'planning'
+  | 'reviewing'
+  | 'writing'
+  | 'polishing'
+  | 'done'
+  | 'error';
 
 export type DocStatus = 'pending' | 'parsing' | 'chunking' | 'embedding' | 'ready' | 'error';
 
@@ -87,6 +94,8 @@ export interface WritingRequest {
   style: Style;
   userOutline?: string;
   knowledgeBaseId?: string;
+  modelConfigId?: string;
+  plan?: WritingPlan;
 }
 
 export interface WritingPlan {

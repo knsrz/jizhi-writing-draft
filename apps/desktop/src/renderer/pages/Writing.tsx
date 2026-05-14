@@ -1,7 +1,8 @@
 import { STYLE_LABELS, WRITING_TYPE_LABELS } from '@app/core';
-import { Download, FileText, Loader2, Plus, RotateCcw, Square } from 'lucide-react';
+import { CheckCircle2, Download, FileText, Loader2, Plus, RotateCcw, Square } from 'lucide-react';
 import { WritingForm } from '../components/writing/WritingForm';
 import { WritingOutput } from '../components/writing/WritingOutput';
+import { WritingPlanEditor } from '../components/writing/WritingPlanEditor';
 import { WritingPlanPanel } from '../components/writing/WritingPlanPanel';
 import { api } from '../lib/api';
 import { cn } from '../lib/utils';
@@ -10,6 +11,7 @@ import { useWritingStore } from '../store/writing';
 const statusLabels = {
   idle: '待开始',
   planning: '规划中',
+  reviewing: '待确认',
   writing: '写作中',
   polishing: '润色中',
   done: '已完成',
@@ -29,12 +31,15 @@ export default function WritingPage() {
     fullText,
     projectId,
     error,
+    updatePlan,
     startWriting,
+    confirmPlan,
     reset,
   } = useWritingStore();
 
   const isActive = status === 'planning' || status === 'writing' || status === 'polishing';
-  const showWorkbench = isActive || status === 'done' || status === 'error';
+  const showWorkbench =
+    isActive || status === 'reviewing' || status === 'done' || status === 'error';
 
   return (
     <div className="flex min-h-full flex-col bg-[#f7f8fb] text-slate-900">
@@ -110,7 +115,9 @@ export default function WritingPage() {
                   </div>
                 </div>
 
-                {status === 'error' ? (
+                {status === 'reviewing' && plan ? (
+                  <WritingPlanEditor plan={plan} onChange={updatePlan} />
+                ) : status === 'error' ? (
                   <div className="rounded-lg border border-rose-200 bg-white p-6 text-rose-700">
                     <p className="font-medium">写作出错</p>
                     <p className="mt-2 text-sm leading-6">{error || '请检查模型配置后重试。'}</p>
@@ -159,6 +166,27 @@ export default function WritingPage() {
                     <Square className="h-4 w-4" />
                     停止写作
                   </button>
+                )}
+
+                {status === 'reviewing' && plan && (
+                  <div className="space-y-2">
+                    <button
+                      type="button"
+                      onClick={confirmPlan}
+                      className="flex w-full items-center justify-center gap-2 rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-slate-800"
+                    >
+                      <CheckCircle2 className="h-4 w-4" />
+                      确认并开始写作
+                    </button>
+                    <button
+                      type="button"
+                      onClick={reset}
+                      className="flex w-full items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                    >
+                      <RotateCcw className="h-4 w-4" />
+                      返回修改目标
+                    </button>
+                  </div>
                 )}
 
                 {status === 'done' && (

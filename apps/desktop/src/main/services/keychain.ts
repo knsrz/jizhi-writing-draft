@@ -1,10 +1,17 @@
+import type { ModelConfigKind } from '@app/core';
+import {
+  createModelEntry,
+  MODEL_LIST_SETTING_KEYS,
+  parseModelEntries,
+  serializeModelEntries,
+  upsertModelEntry,
+} from '@app/core';
 import { eq } from 'drizzle-orm';
 import { safeStorage } from 'electron';
 import { getDb } from '../db/index.js';
 import { settings } from '../db/schema.js';
 
 const API_KEY_PREFIX = 'apikey_encrypted_';
-type ModelConfigKind = 'writing' | 'embedding';
 
 interface StoredEndpointConfig {
   provider: string;
@@ -26,6 +33,7 @@ export const keychain = {
     model?: string;
     writingModel?: string;
     embeddingModel?: string;
+    modelConfigId?: string;
   }): Promise<void> {
     const db = getDb();
     const kind = modelConfig.kind ?? 'writing';
@@ -37,18 +45,28 @@ export const keychain = {
       modelConfig.model ??
       (kind === 'writing' ? modelConfig.writingModel : modelConfig.embeddingModel) ??
       '';
+    const modelEntry = createModelEntry(kind, {
+      provider: modelConfig.provider,
+      baseUrl: modelConfig.baseUrl,
+      model: modelValue,
+    });
+    const modelConfigId = modelConfig.modelConfigId || modelEntry.id;
 
     if (isEncryptionAvailable()) {
       const encrypted = safeStorage.encryptString(modelConfig.apiKey);
       const encoded = encrypted.toString('base64');
 
-      await db
-        .insert(settings)
-        .values({
-          key: encryptedKey,
-          value: encoded,
-        })
-        .onConflictDoUpdate({ target: settings.key, set: { value: encoded } });
+      await Promise.all(
+        [encryptedKey, `${encryptedKey}:${modelConfigId}`].map((key) =>
+          db
+            .insert(settings)
+            .values({
+              key,
+              value: encoded,
+            })
+            .onConflictDoUpdate({ target: settings.key, set: { value: encoded } }),
+        ),
+      );
     }
 
     await db
@@ -63,6 +81,31 @@ export const keychain = {
       .insert(settings)
       .values({ key: modelKey, value: modelValue })
       .onConflictDoUpdate({ target: settings.key, set: { value: modelValue } });
+
+    const existingModels = parseModelEntries(
+      (
+        await db
+          .select()
+          .from(settings)
+          .where(eq(settings.key, MODEL_LIST_SETTING_KEYS[kind]))
+          .get()
+      )?.value,
+      kind,
+    );
+    const models = upsertModelEntry(existingModels, {
+      kind,
+      provider: modelConfig.provider,
+      baseUrl: modelConfig.baseUrl,
+      model: modelValue,
+    });
+
+    await db
+      .insert(settings)
+      .values({ key: MODEL_LIST_SETTING_KEYS[kind], value: serializeModelEntries(models) })
+      .onConflictDoUpdate({
+        target: settings.key,
+        set: { value: serializeModelEntries(models) },
+      });
   },
 
   async getApiKey(): Promise<{
@@ -94,10 +137,25 @@ export const keychain = {
     };
   },
 
-  async getWritingApiConfig(): Promise<StoredEndpointConfig | null> {
+  async getWritingApiConfig(modelConfigId?: string | null): Promise<StoredEndpointConfig | null> {
     const db = getDb();
     const rows = await db.select().from(settings);
     const map = new Map(rows.map((r) => [r.key, r.value]));
+
+    if (modelConfigId) {
+      const model = parseModelEntries(map.get(MODEL_LIST_SETTING_KEYS.writing), 'writing').find(
+        (entry) => entry.id === modelConfigId,
+      );
+      if (model) {
+        return {
+          provider: model.provider,
+          baseUrl: model.baseUrl,
+          apiKey: decryptApiKey(map, 'writing', model.id),
+          model: model.model,
+        };
+      }
+    }
+
     const provider = map.get('provider');
     const baseUrl = map.get('base_url');
 
@@ -111,10 +169,29 @@ export const keychain = {
     };
   },
 
-  async getEmbeddingApiConfig(): Promise<StoredEndpointConfig | null> {
+  async getEmbeddingApiConfig(modelConfigId?: string | null): Promise<StoredEndpointConfig | null> {
     const db = getDb();
     const rows = await db.select().from(settings);
     const map = new Map(rows.map((r) => [r.key, r.value]));
+
+    if (modelConfigId) {
+      const model = parseModelEntries(map.get(MODEL_LIST_SETTING_KEYS.embedding), 'embedding').find(
+        (entry) => entry.id === modelConfigId,
+      );
+      if (model) {
+        return {
+          provider: model.provider,
+          baseUrl: model.baseUrl,
+          apiKey:
+            decryptApiKey(map, 'embedding', model.id) ||
+            decryptApiKey(map, 'writing', model.id) ||
+            decryptApiKey(map, 'embedding') ||
+            decryptApiKey(map, 'writing'),
+          model: model.model,
+        };
+      }
+    }
+
     const provider = map.get('embedding_provider') || map.get('provider');
     const baseUrl = map.get('embedding_base_url') || map.get('base_url');
 
@@ -141,8 +218,14 @@ export const keychain = {
   },
 };
 
-function decryptApiKey(map: Map<string, string>, kind: ModelConfigKind): string {
-  const encryptedB64 = map.get(`${API_KEY_PREFIX}${kind}`) || map.get(`${API_KEY_PREFIX}data`);
+function decryptApiKey(
+  map: Map<string, string>,
+  kind: ModelConfigKind,
+  modelConfigId?: string,
+): string {
+  const specificKey = modelConfigId ? map.get(`${API_KEY_PREFIX}${kind}:${modelConfigId}`) : '';
+  const encryptedB64 =
+    specificKey || map.get(`${API_KEY_PREFIX}${kind}`) || map.get(`${API_KEY_PREFIX}data`);
   if (!encryptedB64 || !isEncryptionAvailable()) return '';
 
   const buffer = Buffer.from(encryptedB64, 'base64');

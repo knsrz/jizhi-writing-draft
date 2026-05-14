@@ -11,6 +11,8 @@ export const IpcChannel = {
   KB_SEARCH: 'kb:search',
 
   WRITING_START: 'writing:start',
+  WRITING_CREATE_PLAN: 'writing:create-plan',
+  WRITING_EXECUTE: 'writing:execute',
   WRITING_CANCEL: 'writing:cancel',
   WRITING_PLAN: 'writing:plan',
   WRITING_SECTION: 'writing:section',

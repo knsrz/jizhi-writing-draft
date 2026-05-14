@@ -1,5 +1,6 @@
 export interface ConnectionTestInput {
   kind?: 'writing' | 'embedding';
+  modelConfigId?: string;
   baseUrl: string;
   apiKey?: string;
   model?: string;

@@ -34,6 +34,7 @@ export function registerSettingsIpc(): void {
         model?: string;
         writingModel?: string;
         embeddingModel?: string;
+        modelConfigId?: string;
       },
     ) => {
       await keychain.storeApiKey(config);
@@ -55,13 +56,14 @@ export function registerSettingsIpc(): void {
         apiKey?: string;
         model?: string;
         writingModel?: string;
+        modelConfigId?: string;
       },
     ) => {
       const kind = config.kind ?? 'writing';
       const savedEndpoint =
         kind === 'embedding'
-          ? await keychain.getEmbeddingApiConfig()
-          : await keychain.getWritingApiConfig();
+          ? await keychain.getEmbeddingApiConfig(config.modelConfigId)
+          : await keychain.getWritingApiConfig(config.modelConfigId);
       const saved = savedEndpoint
         ? {
             provider: savedEndpoint.provider,

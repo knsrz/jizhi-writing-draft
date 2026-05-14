@@ -1,6 +1,13 @@
-import type { SectionOutput, Style, WritingPlan, WritingType } from '@app/core';
+import {
+  createModelEntry,
+  type SectionOutput,
+  type Style,
+  type WritingPlan,
+  type WritingType,
+} from '@app/core';
 import { create } from 'zustand';
 import { api } from '../lib/api';
+import { useSettingsStore } from './settings';
 import { attachWritingListeners } from './writing-listeners';
 
 interface WritingState {
@@ -9,7 +16,7 @@ interface WritingState {
   style: Style;
   targetWords: number;
   knowledgeBaseId: string | null;
-  status: 'idle' | 'planning' | 'writing' | 'polishing' | 'done' | 'error';
+  status: 'idle' | 'planning' | 'reviewing' | 'writing' | 'polishing' | 'done' | 'error';
   plan: WritingPlan | null;
   sections: SectionOutput[];
   currentSectionIndex: number;
@@ -22,7 +29,9 @@ interface WritingState {
       Pick<WritingState, 'topic' | 'type' | 'style' | 'targetWords' | 'knowledgeBaseId'>
     >,
   ) => void;
+  updatePlan: (plan: WritingPlan) => void;
   startWriting: () => Promise<void>;
+  confirmPlan: () => Promise<void>;
   reset: () => void;
 }
 
@@ -49,13 +58,53 @@ export const useWritingStore = create<WritingState>((set, get) => ({
   fullText: '',
 
   setForm: (data) => set(data),
+  updatePlan: (plan) => set({ plan }),
 
   startWriting: async () => {
     const { topic, type, style, targetWords, knowledgeBaseId } = get();
     if (!topic.trim()) return;
 
     clearWritingListeners();
-    set({ status: 'planning', sections: [], plan: null, error: null, fullText: '' });
+    set({
+      status: 'planning',
+      sections: [],
+      currentSectionIndex: -1,
+      plan: null,
+      progress: 5,
+      error: null,
+      fullText: '',
+    });
+
+    try {
+      const modelConfigId = getSelectedWritingModelConfigId();
+      const plan = (await api.createWritingPlan({
+        topic,
+        type,
+        style,
+        targetWords,
+        knowledgeBaseId,
+        modelConfigId,
+      })) as WritingPlan;
+
+      set({ status: 'reviewing', plan, progress: 10 });
+    } catch (e) {
+      set({ status: 'error', error: e instanceof Error ? e.message : String(e) });
+    }
+  },
+
+  confirmPlan: async () => {
+    const { topic, type, style, targetWords, knowledgeBaseId, plan } = get();
+    if (!topic.trim() || !plan) return;
+
+    clearWritingListeners();
+    set({
+      status: 'writing',
+      sections: [],
+      currentSectionIndex: -1,
+      progress: 10,
+      error: null,
+      fullText: '',
+    });
 
     detachWritingListeners = attachWritingListeners(api, {
       onPlan: (plan) => set({ plan: plan as WritingPlan, status: 'writing' }),
@@ -85,7 +134,17 @@ export const useWritingStore = create<WritingState>((set, get) => ({
     });
 
     try {
-      await api.startWriting({ topic, type, style, targetWords, knowledgeBaseId });
+      const modelConfigId = getSelectedWritingModelConfigId();
+
+      await api.executeWritingPlan({
+        topic,
+        type,
+        style,
+        targetWords,
+        knowledgeBaseId,
+        modelConfigId,
+        plan,
+      });
     } catch (e) {
       set({ status: 'error', error: e instanceof Error ? e.message : String(e) });
       clearWritingListeners();
@@ -107,3 +166,10 @@ export const useWritingStore = create<WritingState>((set, get) => ({
     });
   },
 }));
+
+function getSelectedWritingModelConfigId(): string | undefined {
+  const { writing } = useSettingsStore.getState();
+  return writing.baseUrl.trim() && writing.model.trim()
+    ? createModelEntry('writing', writing).id
+    : undefined;
+}

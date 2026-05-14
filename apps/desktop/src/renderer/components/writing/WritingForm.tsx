@@ -1,8 +1,15 @@
-import type { Style, WritingType } from '@app/core';
-import { STYLE_LABELS, WORD_COUNT_OPTIONS, WRITING_TYPE_LABELS } from '@app/core';
-import { FileText, Library, PenLine, SendHorizontal, SlidersHorizontal } from 'lucide-react';
+import {
+  createModelEntry,
+  STYLE_LABELS,
+  type Style,
+  WORD_COUNT_OPTIONS,
+  WRITING_TYPE_LABELS,
+  type WritingType,
+} from '@app/core';
+import { Bot, FileText, Library, PenLine, SendHorizontal, SlidersHorizontal } from 'lucide-react';
 import { useEffect } from 'react';
 import { useKnowledgeStore } from '../../store/knowledge';
+import { useSettingsStore } from '../../store/settings';
 import { useWritingStore } from '../../store/writing';
 import {
   getWordCountSelectValue,
@@ -19,11 +26,16 @@ const starterPrompts = [
 export function WritingForm({ onStart }: { onStart: () => void }) {
   const { topic, type, style, targetWords, knowledgeBaseId, setForm, status } = useWritingStore();
   const { bases, loadBases } = useKnowledgeStore();
+  const { writing, loadSettings, selectWritingModel } = useSettingsStore();
   const isRunning = status !== 'idle' && status !== 'done' && status !== 'error';
+  const activeWritingModelId =
+    writing.baseUrl.trim() && writing.model.trim() ? createModelEntry('writing', writing).id : '';
+  const activeModelInList = writing.models.some((model) => model.id === activeWritingModelId);
 
   useEffect(() => {
     loadBases();
-  }, [loadBases]);
+    loadSettings();
+  }, [loadBases, loadSettings]);
 
   return (
     <div className="mx-auto flex w-full max-w-4xl flex-col gap-5">
@@ -69,7 +81,7 @@ export function WritingForm({ onStart }: { onStart: () => void }) {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-3 border-b border-slate-100 p-4 lg:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 border-b border-slate-100 p-4 lg:grid-cols-5">
           <label className="block">
             <span className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-slate-500">
               <FileText className="h-3.5 w-3.5" />
@@ -131,6 +143,29 @@ export function WritingForm({ onStart }: { onStart: () => void }) {
 
           <label className="block">
             <span className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-slate-500">
+              <Bot className="h-3.5 w-3.5" />
+              写作模型
+            </span>
+            <select
+              value={activeWritingModelId}
+              onChange={(e) => void selectWritingModel(e.target.value)}
+              className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
+              disabled={isRunning || writing.models.length === 0}
+            >
+              {writing.models.length === 0 && <option value="">未配置</option>}
+              {activeWritingModelId && !activeModelInList && (
+                <option value={activeWritingModelId}>{writing.model}</option>
+              )}
+              {writing.models.map((model) => (
+                <option key={model.id} value={model.id}>
+                  {model.name}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label className="block">
+            <span className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-slate-500">
               <Library className="h-3.5 w-3.5" />
               知识库
             </span>
@@ -171,7 +206,8 @@ export function WritingForm({ onStart }: { onStart: () => void }) {
 
         <div className="flex items-center justify-between gap-3 p-4">
           <div className="text-sm text-slate-500">
-            {targetWords.toLocaleString()} 字 · {STYLE_LABELS[style]} · {bases.length} 个知识库可选
+            {targetWords.toLocaleString()} 字 · {STYLE_LABELS[style]} ·{' '}
+            {writing.model || '未选择模型'} · {bases.length} 个知识库可选
           </div>
           <button
             type="button"
@@ -179,7 +215,7 @@ export function WritingForm({ onStart }: { onStart: () => void }) {
             disabled={!topic.trim() || isRunning}
             className="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {isRunning ? '写作中' : '开始写作'}
+            {isRunning ? '规划中' : '生成规划'}
             <SendHorizontal className="h-4 w-4" />
           </button>
         </div>

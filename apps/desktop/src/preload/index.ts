@@ -20,6 +20,8 @@ const api = {
 
   // Writing
   startWriting: (req: unknown) => ipcRenderer.invoke(IpcChannel.WRITING_START, req),
+  createWritingPlan: (req: unknown) => ipcRenderer.invoke(IpcChannel.WRITING_CREATE_PLAN, req),
+  executeWritingPlan: (req: unknown) => ipcRenderer.invoke(IpcChannel.WRITING_EXECUTE, req),
   cancelWriting: () => ipcRenderer.invoke(IpcChannel.WRITING_CANCEL),
   onWritingPlan: (cb: (plan: unknown) => void) => {
     const handler = (_: unknown, p: unknown) => cb(p);

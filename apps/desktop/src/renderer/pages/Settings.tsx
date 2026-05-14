@@ -1,3 +1,4 @@
+import { createModelEntry, filterModelEntriesForEndpoint, type SavedModelEntry } from '@app/core';
 import {
   Brain,
   CheckCircle2,
@@ -49,6 +50,8 @@ export default function SettingsPage() {
     setEmbeddingConfig,
     saveWritingApiKey,
     saveEmbeddingApiKey,
+    selectWritingModel,
+    selectEmbeddingModel,
     testWritingConnection,
     testEmbeddingConnection,
     loadSettings,
@@ -137,6 +140,7 @@ export default function SettingsPage() {
               testResult={testResult.writing}
               modelLabel="写作模型"
               modelPlaceholder="gpt-4o"
+              activeModelId={createModelEntry('writing', writing).id}
               onApiKeyChange={setWritingApiKey}
               onPresetSelect={(providerId) =>
                 setWritingConfig(
@@ -148,6 +152,7 @@ export default function SettingsPage() {
                 )
               }
               onChange={setWritingConfig}
+              onSelectModel={(modelConfigId) => void selectWritingModel(modelConfigId)}
               onSave={() => saveWritingApiKey(writingApiKey)}
               onTest={() => testWritingConnection(writingApiKey)}
             />
@@ -163,6 +168,7 @@ export default function SettingsPage() {
               testResult={testResult.embedding}
               modelLabel="嵌入模型"
               modelPlaceholder="text-embedding-3-small"
+              activeModelId={createModelEntry('embedding', embedding).id}
               onApiKeyChange={setEmbeddingApiKey}
               onPresetSelect={(providerId) =>
                 setEmbeddingConfig(
@@ -174,6 +180,7 @@ export default function SettingsPage() {
                 )
               }
               onChange={setEmbeddingConfig}
+              onSelectModel={(modelConfigId) => void selectEmbeddingModel(modelConfigId)}
               onSave={() => saveEmbeddingApiKey(embeddingApiKey)}
               onTest={() => testEmbeddingConnection(embeddingApiKey)}
             />
@@ -195,15 +202,23 @@ function EndpointSettings({
   testResult,
   modelLabel,
   modelPlaceholder,
+  activeModelId,
   onApiKeyChange,
   onPresetSelect,
   onChange,
+  onSelectModel,
   onSave,
   onTest,
 }: {
   title: string;
   description: string;
-  endpoint: { provider: string; baseUrl: string; model: string; apiKeySet: boolean };
+  endpoint: {
+    provider: string;
+    baseUrl: string;
+    model: string;
+    models: SavedModelEntry[];
+    apiKeySet: boolean;
+  };
   apiKey: string;
   apiKeyPlaceholder: string;
   saving: boolean;
@@ -211,9 +226,11 @@ function EndpointSettings({
   testResult: { success: boolean; latencyMs: number; error?: string } | null;
   modelLabel: string;
   modelPlaceholder: string;
+  activeModelId: string;
   onApiKeyChange: (value: string) => void;
   onPresetSelect: (providerId: string) => void;
   onChange: (config: Partial<{ provider: string; baseUrl: string; model: string }>) => void;
+  onSelectModel: (modelConfigId: string) => void;
   onSave: () => void;
   onTest: () => void;
 }) {
@@ -221,6 +238,10 @@ function EndpointSettings({
     () =>
       PROVIDER_PRESETS.find((preset) => preset.id === endpoint.provider) ?? PROVIDER_PRESETS.at(-1),
     [endpoint.provider],
+  );
+  const providerModels = useMemo(
+    () => filterModelEntriesForEndpoint(endpoint.models, endpoint),
+    [endpoint],
   );
 
   return (
@@ -355,6 +376,53 @@ function EndpointSettings({
                 ? `连接成功，延迟 ${testResult.latencyMs}ms`
                 : `连接失败：${testResult.error}`}
             </span>
+          )}
+        </div>
+
+        <div className="border-t border-slate-200 pt-5">
+          <div className="mb-3 flex items-center justify-between">
+            <div>
+              <h3 className="text-sm font-semibold text-slate-800">已保存模型</h3>
+              <p className="mt-1 text-xs text-slate-500">保存配置后会自动加入列表。</p>
+            </div>
+            <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs text-slate-500">
+              {providerModels.length}
+            </span>
+          </div>
+
+          {providerModels.length > 0 ? (
+            <div className="space-y-2">
+              {providerModels.map((model) => {
+                const isActive = model.id === activeModelId;
+                return (
+                  <button
+                    type="button"
+                    key={model.id}
+                    onClick={() => onSelectModel(model.id)}
+                    className={cn(
+                      'flex w-full items-center justify-between gap-3 rounded-lg border px-3 py-2.5 text-left transition-colors',
+                      isActive
+                        ? 'border-blue-500 bg-blue-50'
+                        : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50',
+                    )}
+                  >
+                    <span className="min-w-0">
+                      <span className="block truncate text-sm font-medium text-slate-900">
+                        {model.name}
+                      </span>
+                      <span className="mt-0.5 block truncate text-xs text-slate-500">
+                        {model.provider} · {model.baseUrl}
+                      </span>
+                    </span>
+                    {isActive && <CheckCircle2 className="h-4 w-4 shrink-0 text-blue-600" />}
+                  </button>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="rounded-lg border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center text-sm text-slate-500">
+              暂无已保存模型
+            </div>
           )}
         </div>
       </div>

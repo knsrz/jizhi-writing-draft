@@ -14,6 +14,8 @@ export const api = {
   searchKnowledgeBase: (kbId: string, query: string) => w.api.searchKnowledgeBase(kbId, query),
 
   startWriting: (req: unknown) => w.api.startWriting(req),
+  createWritingPlan: (req: unknown) => w.api.createWritingPlan(req),
+  executeWritingPlan: (req: unknown) => w.api.executeWritingPlan(req),
   cancelWriting: () => w.api.cancelWriting(),
   onWritingPlan: (cb: (plan: unknown) => void) => w.api.onWritingPlan(cb),
   onWritingSection: (cb: (section: unknown) => void) => w.api.onWritingSection(cb),
