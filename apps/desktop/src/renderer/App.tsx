@@ -9,9 +9,9 @@ import WritingPage from './pages/Writing';
 export default function App() {
   return (
     <BrowserRouter>
-      <div className="flex h-screen bg-white">
+      <div className="flex h-screen overflow-hidden bg-[#eef4fb] text-slate-950">
         <Sidebar />
-        <main className="flex-1 overflow-auto">
+        <main className="min-w-0 flex-1 overflow-auto">
           <Routes>
             <Route path="/" element={<WritingPage />} />
             <Route path="/knowledge" element={<KnowledgePage />} />
