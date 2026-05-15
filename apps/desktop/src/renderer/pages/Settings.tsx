@@ -79,7 +79,7 @@ export default function SettingsPage() {
             <p className="text-xs font-medium uppercase tracking-[0.18em] text-slate-400">
               Settings
             </p>
-            <h1 className="mt-1 text-2xl font-semibold tracking-tight">设置</h1>
+            <h1 className="text-2xl font-semibold tracking-tight">设置</h1>
           </div>
           <div className="flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-sm text-emerald-700">
             <ShieldCheck className="h-4 w-4" />
