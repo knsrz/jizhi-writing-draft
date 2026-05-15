@@ -38,21 +38,21 @@ export function WritingForm({ onStart }: { onStart: () => void }) {
   }, [loadBases, loadSettings]);
 
   return (
-    <div className="mx-auto flex w-full max-w-4xl flex-col gap-5">
-      <div className="flex items-center justify-between">
+    <div className="mx-auto flex w-full max-w-5xl flex-col gap-6">
+      <div className="flex items-end justify-between gap-6">
         <div>
-          <p className="text-xs font-medium uppercase tracking-[0.18em] text-slate-400">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600">
             Draft composer
           </p>
-          <h1 className="mt-1 text-3xl font-semibold text-slate-900">新建写作</h1>
+          <h1 className="mt-2 text-4xl font-semibold tracking-tight text-slate-950">新建写作</h1>
         </div>
-        <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-500">
+        <div className="flex items-center gap-2 rounded-full border border-blue-100 bg-white/90 px-4 py-2 text-sm font-medium text-slate-600 shadow-sm">
           <PenLine className="h-4 w-4" />
           {WRITING_TYPE_LABELS[type]}
         </div>
       </div>
 
-      <div className="rounded-lg border border-slate-200 bg-white shadow-sm">
+      <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-xl shadow-slate-200/60">
         <div className="border-b border-slate-100 p-4">
           <label htmlFor="writing-topic" className="sr-only">
             你要写什么？
@@ -61,7 +61,7 @@ export function WritingForm({ onStart }: { onStart: () => void }) {
             id="writing-topic"
             value={topic}
             onChange={(e) => setForm({ topic: e.target.value })}
-            className="min-h-36 w-full resize-none border-0 bg-transparent text-base leading-7 text-slate-800 outline-none placeholder:text-slate-400"
+            className="min-h-44 w-full resize-none border-0 bg-transparent text-base leading-8 text-slate-800 outline-none placeholder:text-slate-400"
             placeholder="输入写作需求、素材要点或目标读者..."
             disabled={isRunning}
           />
@@ -73,7 +73,7 @@ export function WritingForm({ onStart }: { onStart: () => void }) {
                 type="button"
                 onClick={() => setForm({ topic: prompt })}
                 disabled={isRunning}
-                className="rounded-full border border-slate-200 px-3 py-1.5 text-xs text-slate-600 transition hover:border-slate-300 hover:bg-slate-50 disabled:opacity-50"
+                className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700 disabled:opacity-50"
               >
                 {prompt.slice(0, 18)}...
               </button>
@@ -81,7 +81,7 @@ export function WritingForm({ onStart }: { onStart: () => void }) {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-3 border-b border-slate-100 p-4 lg:grid-cols-5">
+        <div className="grid grid-cols-2 gap-4 border-b border-slate-100 bg-slate-50/40 p-5 lg:grid-cols-5">
           <label className="block">
             <span className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-slate-500">
               <FileText className="h-3.5 w-3.5" />
@@ -90,7 +90,7 @@ export function WritingForm({ onStart }: { onStart: () => void }) {
             <select
               value={type}
               onChange={(e) => setForm({ type: e.target.value as WritingType })}
-              className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
+              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100 disabled:opacity-60"
               disabled={isRunning}
             >
               {Object.entries(WRITING_TYPE_LABELS).map(([value, label]) => (
@@ -109,7 +109,7 @@ export function WritingForm({ onStart }: { onStart: () => void }) {
             <select
               value={style}
               onChange={(e) => setForm({ style: e.target.value as Style })}
-              className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
+              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100 disabled:opacity-60"
               disabled={isRunning}
             >
               {Object.entries(STYLE_LABELS).map(([value, label]) => (
@@ -129,7 +129,7 @@ export function WritingForm({ onStart }: { onStart: () => void }) {
                   targetWords: resolveWordCountSelection(e.target.value, targetWords),
                 })
               }
-              className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
+              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100 disabled:opacity-60"
               disabled={isRunning}
             >
               {WORD_COUNT_OPTIONS.filter((opt) => opt.value > 0).map((opt) => (
@@ -149,7 +149,7 @@ export function WritingForm({ onStart }: { onStart: () => void }) {
             <select
               value={activeWritingModelId}
               onChange={(e) => void selectWritingModel(e.target.value)}
-              className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
+              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100 disabled:opacity-60"
               disabled={isRunning || writing.models.length === 0}
             >
               {writing.models.length === 0 && <option value="">未配置</option>}
@@ -172,7 +172,7 @@ export function WritingForm({ onStart }: { onStart: () => void }) {
             <select
               value={knowledgeBaseId || ''}
               onChange={(e) => setForm({ knowledgeBaseId: e.target.value || null })}
-              className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
+              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100 disabled:opacity-60"
               disabled={isRunning}
             >
               <option value="">不使用</option>
@@ -197,14 +197,14 @@ export function WritingForm({ onStart }: { onStart: () => void }) {
                 onChange={(e) =>
                   setForm({ targetWords: sanitizeTargetWords(Number(e.target.value)) })
                 }
-                className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100 disabled:opacity-60"
                 disabled={isRunning}
               />
             </label>
           </div>
         )}
 
-        <div className="flex items-center justify-between gap-3 p-4">
+        <div className="flex items-center justify-between gap-3 bg-white p-5">
           <div className="text-sm text-slate-500">
             {targetWords.toLocaleString()} 字 · {STYLE_LABELS[style]} ·{' '}
             {writing.model || '未选择模型'} · {bases.length} 个知识库可选
@@ -213,7 +213,7 @@ export function WritingForm({ onStart }: { onStart: () => void }) {
             type="button"
             onClick={onStart}
             disabled={!topic.trim() || isRunning}
-            className="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isRunning ? '规划中' : '生成规划'}
             <SendHorizontal className="h-4 w-4" />
