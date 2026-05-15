@@ -72,14 +72,14 @@ export default function SettingsPage() {
         : '嵌入 Key 未保存';
 
   return (
-    <div className="min-h-full bg-[#f7f8fb] text-slate-900">
-      <header className="border-b border-slate-200 bg-white/90 px-8 py-5">
+    <div className="min-h-full bg-[#eef4fb] text-slate-950">
+      <header className="border-b border-white/70 bg-white/80 px-8 py-5 shadow-sm shadow-slate-200/60 backdrop-blur">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-xs font-medium uppercase tracking-[0.18em] text-slate-400">
               Settings
             </p>
-            <h1 className="mt-1 text-2xl font-semibold">设置</h1>
+            <h1 className="mt-1 text-2xl font-semibold tracking-tight">设置</h1>
           </div>
           <div className="flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-sm text-emerald-700">
             <ShieldCheck className="h-4 w-4" />
@@ -100,10 +100,10 @@ export default function SettingsPage() {
                 type="button"
                 onClick={() => setActiveSection(section.id)}
                 className={cn(
-                  'flex w-full items-start gap-3 rounded-lg border p-4 text-left transition-colors',
+                  'flex w-full items-start gap-3 rounded-2xl border p-4 text-left shadow-sm shadow-slate-200/50 transition-colors',
                   isActive
-                    ? 'border-blue-500 bg-white ring-2 ring-blue-100'
-                    : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50',
+                    ? 'border-blue-300 bg-white ring-2 ring-blue-100'
+                    : 'border-slate-200/80 bg-white hover:border-blue-200 hover:bg-blue-50/50',
                 )}
               >
                 <span
@@ -262,10 +262,10 @@ function EndpointSettings({
                 key={preset.id}
                 onClick={() => onPresetSelect(preset.id)}
                 className={cn(
-                  'w-full rounded-lg border bg-white p-4 text-left transition-colors',
+                  'w-full rounded-2xl border border-slate-200/80 bg-white p-4 text-left transition-colors',
                   isActive
-                    ? 'border-blue-500 ring-2 ring-blue-100'
-                    : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50',
+                    ? 'border-blue-300 bg-white ring-2 ring-blue-100'
+                    : 'hover:border-blue-200 hover:bg-blue-50/50',
                 )}
               >
                 <div className="flex items-start justify-between gap-3">
@@ -306,7 +306,7 @@ function EndpointSettings({
               type="text"
               value={endpoint.baseUrl}
               onChange={(e) => onChange({ baseUrl: e.target.value })}
-              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
               placeholder="https://api.openai.com/v1"
             />
           </label>
@@ -317,7 +317,7 @@ function EndpointSettings({
               type="text"
               value={endpoint.model}
               onChange={(e) => onChange({ model: e.target.value })}
-              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
               placeholder={modelPlaceholder}
             />
           </label>
@@ -331,7 +331,7 @@ function EndpointSettings({
               type="password"
               value={apiKey}
               onChange={(e) => onApiKeyChange(e.target.value)}
-              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
               placeholder={apiKeyPlaceholder}
             />
           </label>
@@ -342,7 +342,7 @@ function EndpointSettings({
             type="button"
             onClick={onSave}
             disabled={saving || !endpoint.baseUrl.trim() || !endpoint.model.trim()}
-            className="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {saving ? <RotateCw className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
             {saving ? '保存中' : '保存配置'}
@@ -356,7 +356,7 @@ function EndpointSettings({
               !endpoint.baseUrl.trim() ||
               !endpoint.model.trim()
             }
-            className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:border-blue-200 hover:bg-blue-50/50 hover:text-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {testing ? (
               <RotateCw className="h-4 w-4 animate-spin" />
