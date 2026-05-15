@@ -5,10 +5,12 @@ import { Link } from 'react-router-dom';
 
 export function KnowledgeCard({ kb, onDelete }: { kb: KnowledgeBase; onDelete: (id: string) => void }) {
   return (
-    <div className="border border-slate-200 rounded-lg p-4 hover:border-blue-300 transition-colors">
+    <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm shadow-slate-200/60 transition hover:border-blue-200 hover:shadow-md hover:shadow-blue-100/60">
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
-          <Folder className="w-8 h-8 text-blue-500" />
+          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-50 text-blue-600">
+            <Folder className="h-5 w-5" />
+          </div>
           <div>
             <h3 className="font-medium text-slate-800">{kb.name}</h3>
             <p className="text-sm text-slate-500 mt-0.5">{kb.description || '暂无描述'}</p>
