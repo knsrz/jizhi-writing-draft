@@ -1,9 +1,15 @@
 // apps/desktop/src/renderer/components/knowledge/KnowledgeCard.tsx
 import type { KnowledgeBase } from '@app/core';
-import { Folder, ArrowRight } from 'lucide-react';
+import { ArrowRight, Folder } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-export function KnowledgeCard({ kb, onDelete }: { kb: KnowledgeBase; onDelete: (id: string) => void }) {
+export function KnowledgeCard({
+  kb,
+  onDelete,
+}: {
+  kb: KnowledgeBase;
+  onDelete: (id: string) => void;
+}) {
   return (
     <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm shadow-slate-200/60 transition hover:border-blue-200 hover:shadow-md hover:shadow-blue-100/60">
       <div className="flex items-start justify-between">
@@ -17,6 +23,7 @@ export function KnowledgeCard({ kb, onDelete }: { kb: KnowledgeBase; onDelete: (
           </div>
         </div>
         <button
+          type="button"
           onClick={() => onDelete(kb.id)}
           className="text-xs text-red-400 hover:text-red-600"
         >

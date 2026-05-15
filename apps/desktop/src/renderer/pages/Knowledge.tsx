@@ -1,8 +1,9 @@
 // apps/desktop/src/renderer/pages/Knowledge.tsx
-import { useEffect, useState } from 'react';
+
 import { Database, Plus, Search } from 'lucide-react';
-import { useKnowledgeStore } from '../store/knowledge';
+import { useEffect, useState } from 'react';
 import { KnowledgeCard } from '../components/knowledge/KnowledgeCard';
+import { useKnowledgeStore } from '../store/knowledge';
 
 export default function KnowledgePage() {
   const { bases, loadBases, createBase, deleteBase } = useKnowledgeStore();
@@ -10,7 +11,9 @@ export default function KnowledgePage() {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
 
-  useEffect(() => { loadBases(); }, []);
+  useEffect(() => {
+    loadBases();
+  }, [loadBases]);
 
   const handleCreate = async () => {
     if (!name.trim()) return;
@@ -36,6 +39,7 @@ export default function KnowledgePage() {
               <Search className="h-4 w-4" />
             </div>
             <button
+              type="button"
               onClick={() => setShowCreate(true)}
               className="rounded-xl bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700"
             >
@@ -66,8 +70,20 @@ export default function KnowledgePage() {
               />
             </div>
             <div className="mt-3 flex gap-2">
-              <button onClick={handleCreate} className="rounded-xl bg-blue-600 px-4 py-2 text-sm text-white">创建</button>
-              <button onClick={() => setShowCreate(false)} className="rounded-xl border border-slate-300 px-4 py-2 text-sm">取消</button>
+              <button
+                type="button"
+                onClick={handleCreate}
+                className="rounded-xl bg-blue-600 px-4 py-2 text-sm text-white"
+              >
+                创建
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowCreate(false)}
+                className="rounded-xl border border-slate-300 px-4 py-2 text-sm"
+              >
+                取消
+              </button>
             </div>
           </div>
         )}

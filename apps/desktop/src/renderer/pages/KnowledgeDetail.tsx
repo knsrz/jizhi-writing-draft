@@ -34,7 +34,8 @@ export default function KnowledgeDetailPage() {
 
   const kb = bases.find((b) => b.id === id);
 
-  if (!kb) return <div className="min-h-full bg-[#eef4fb] px-8 py-8 text-slate-400">知识库不存在</div>;
+  if (!kb)
+    return <div className="min-h-full bg-[#eef4fb] px-8 py-8 text-slate-400">知识库不存在</div>;
 
   return (
     <div className="min-h-full bg-[#eef4fb] px-8 py-8">
