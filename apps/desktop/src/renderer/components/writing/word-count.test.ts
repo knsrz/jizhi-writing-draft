@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   DEFAULT_CUSTOM_WORD_COUNT,
   getWordCountSelectValue,
+  inferTargetWordsFromText,
   resolveWordCountSelection,
   sanitizeTargetWords,
 } from './word-count';
@@ -26,5 +27,11 @@ describe('word count selection', () => {
     expect(sanitizeTargetWords(30)).toBe(100);
     expect(sanitizeTargetWords(1200)).toBe(1200);
     expect(sanitizeTargetWords(100000)).toBe(50000);
+  });
+
+  it('infers explicit word limits from the writing request text', () => {
+    expect(inferTargetWordsFromText('请写一份 200 字以内的通知', 2000)).toBe(200);
+    expect(inferTargetWordsFromText('控制在300字左右，语气正式', 2000)).toBe(300);
+    expect(inferTargetWordsFromText('2026 年季度总结', 2000)).toBe(2000);
   });
 });

@@ -30,13 +30,14 @@ export async function generatePlan(
   model: LanguageModel,
   request: WritingRequest,
   _retriever?: Retriever,
-  _knowledgeBaseId?: string,
+  knowledgeBaseId?: string,
   options?: { signal?: AbortSignal },
 ): Promise<WritingPlan> {
   const prompt = `写作类型：${request.type}
 写作主题：${request.topic}
 目标字数：${request.targetWords}
 风格：${request.style}
+知识库：${knowledgeBaseId ? '已选择，可按需标记 needsRAG' : '未使用，所有章节 needsRAG 必须为 false'}
 ${request.userOutline ? `用户大纲：${request.userOutline}` : ''}
 
 请为此生成写作计划。`;
@@ -54,8 +55,62 @@ ${request.userOutline ? `用户大纲：${request.userOutline}` : ''}
   const jsonEnd = text.lastIndexOf('}') + 1;
   const plan: WritingPlan = JSON.parse(text.slice(jsonStart, jsonEnd));
 
-  const totalWords = plan.sections.reduce((sum, s) => sum + s.targetWords, 0);
-  plan.totalWordBudget = totalWords;
+  return normalizeGeneratedPlan(plan, {
+    targetWords: request.targetWords,
+    hasKnowledgeBase: Boolean(knowledgeBaseId),
+  });
+}
 
-  return plan;
+export function normalizeGeneratedPlan(
+  plan: WritingPlan,
+  options: { targetWords: number; hasKnowledgeBase: boolean },
+): WritingPlan {
+  const targetWords = normalizeTargetWords(options.targetWords);
+  const sections = scaleSectionWords(plan.sections, targetWords).map((section) => ({
+    ...section,
+    title: section.title.trim() || '未命名章节',
+    keywords: section.keywords.map((keyword) => keyword.trim()).filter(Boolean),
+    needsRAG: options.hasKnowledgeBase ? Boolean(section.needsRAG) : false,
+  }));
+
+  return {
+    ...plan,
+    goal: plan.goal.trim(),
+    audience: plan.audience.trim(),
+    sections,
+    totalWordBudget: sections.reduce((sum, section) => sum + section.targetWords, 0),
+    missingInfo: plan.missingInfo?.map((item) => item.trim()).filter(Boolean),
+  };
+}
+
+function scaleSectionWords(sections: WritingPlan['sections'], targetWords: number) {
+  if (sections.length === 0) return [];
+
+  const weights = sections.map((section) => Math.max(1, Number(section.targetWords) || 1));
+  const weightTotal = weights.reduce((sum, weight) => sum + weight, 0);
+  const scaled = sections.map((section, index) => {
+    const rawWords = (weights[index] / weightTotal) * targetWords;
+    return {
+      section,
+      words: Math.floor(rawWords),
+      remainder: rawWords - Math.floor(rawWords),
+    };
+  });
+
+  let remaining = targetWords - scaled.reduce((sum, item) => sum + item.words, 0);
+  for (const item of [...scaled].sort((a, b) => b.remainder - a.remainder)) {
+    if (remaining <= 0) break;
+    item.words += 1;
+    remaining -= 1;
+  }
+
+  return scaled.map(({ section, words }) => ({
+    ...section,
+    targetWords: Math.max(1, words),
+  }));
+}
+
+function normalizeTargetWords(value: number): number {
+  if (!Number.isFinite(value) || value <= 0) return 2000;
+  return Math.max(100, Math.round(value));
 }

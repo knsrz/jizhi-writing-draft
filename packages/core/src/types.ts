@@ -98,6 +98,20 @@ export interface WritingRequest {
   plan?: WritingPlan;
 }
 
+export interface WritingRevisionRequest {
+  projectId: string;
+  instruction: string;
+  modelConfigId?: string;
+}
+
+export interface WritingRevisionResult {
+  projectId: string;
+  content: string;
+  wordCount: number;
+  versionId: string;
+  versionNumber: number;
+}
+
 export interface WritingPlan {
   goal: string;
   audience: string;

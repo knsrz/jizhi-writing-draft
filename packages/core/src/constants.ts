@@ -1,5 +1,5 @@
 // packages/core/src/constants.ts
-import type { Style, WritingType } from './types.js';
+import type { Style, WritingStatus, WritingType } from './types.js';
 
 export const WRITING_TYPE_LABELS: Record<WritingType, string> = {
   summary: '工作总结',
@@ -21,6 +21,17 @@ export const STYLE_LABELS: Record<Style, string> = {
   friendly: '亲和',
   promotional: '宣传',
   government: '公文',
+};
+
+export const WRITING_STATUS_LABELS: Record<WritingStatus | 'idle', string> = {
+  idle: '待开始',
+  draft: '草稿',
+  planning: '规划中',
+  reviewing: '待确认',
+  writing: '写作中',
+  polishing: '润色中',
+  done: '已完成',
+  error: '出错',
 };
 
 export const WORD_COUNT_OPTIONS = [

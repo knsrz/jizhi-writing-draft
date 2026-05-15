@@ -1,9 +1,15 @@
 import { randomUUID } from 'node:crypto';
 import { join } from 'node:path';
 import type { PipelineCallbacks } from '@app/agent';
-import { generatePlan, runPipeline } from '@app/agent';
+import { generatePlan, reviseDocument, runPipeline } from '@app/agent';
 import { createOpenAICompatible, getEmbeddingModel, getWritingModel, tokenCounter } from '@app/ai';
-import type { WritingPlan, WritingRequest } from '@app/core';
+import type {
+  WritingPlan,
+  WritingProject,
+  WritingRequest,
+  WritingRevisionRequest,
+  WritingRevisionResult,
+} from '@app/core';
 import { IpcChannel } from '@app/core';
 import { Retriever, VectorStore } from '@app/knowledge';
 import { desc, eq } from 'drizzle-orm';
@@ -59,9 +65,24 @@ export function registerWritingIpc(): void {
     return { cancelled: true };
   });
 
-  ipcMain.handle('project:list', async () => {
+  ipcMain.handle(IpcChannel.PROJECT_LIST, async () => {
     const db = getDb();
-    return db.select().from(writingProjects).orderBy(desc(writingProjects.createdAt)).all();
+    return db
+      .select()
+      .from(writingProjects)
+      .orderBy(desc(writingProjects.createdAt))
+      .all()
+      .map(hydrateProject);
+  });
+
+  ipcMain.handle(IpcChannel.PROJECT_GET, async (_, projectId: string) => {
+    const db = getDb();
+    const project = await db
+      .select()
+      .from(writingProjects)
+      .where(eq(writingProjects.id, projectId))
+      .get();
+    return project ? hydrateProject(project) : null;
   });
 
   ipcMain.handle(IpcChannel.VERSION_LIST, async (_, projectId: string) => {
@@ -74,10 +95,23 @@ export function registerWritingIpc(): void {
       .all();
   });
 
+  ipcMain.handle(IpcChannel.VERSION_LATEST, async (_, projectId: string) => {
+    const db = getDb();
+    return db
+      .select()
+      .from(writingVersions)
+      .where(eq(writingVersions.projectId, projectId))
+      .orderBy(desc(writingVersions.versionNumber))
+      .limit(1)
+      .get();
+  });
+
   ipcMain.handle(IpcChannel.VERSION_GET, async (_, versionId: string) => {
     const db = getDb();
     return db.select().from(writingVersions).where(eq(writingVersions.id, versionId)).get();
   });
+
+  ipcMain.handle(IpcChannel.WRITING_REVISE, reviseWritingRequest);
 }
 
 async function executeWritingRequest(
@@ -210,6 +244,83 @@ async function executeWritingRequest(
   }
 }
 
+async function reviseWritingRequest(
+  _event: IpcMainInvokeEvent,
+  request: WritingRevisionRequest,
+): Promise<WritingRevisionResult> {
+  const instruction = request.instruction.trim();
+  if (!instruction) throw new Error('请输入修改要求');
+
+  currentWritingAbort?.abort();
+  const abortController = new AbortController();
+  currentWritingAbort = abortController;
+
+  try {
+    const db = getDb();
+    const projectRow = await db
+      .select()
+      .from(writingProjects)
+      .where(eq(writingProjects.id, request.projectId))
+      .get();
+    if (!projectRow) throw new Error('未找到写作项目');
+
+    const latestVersion = await db
+      .select()
+      .from(writingVersions)
+      .where(eq(writingVersions.projectId, request.projectId))
+      .orderBy(desc(writingVersions.versionNumber))
+      .limit(1)
+      .get();
+    if (!latestVersion) throw new Error('未找到可修改的写作版本');
+
+    const project = hydrateProject(projectRow);
+    const writingModel = await createWritingModel({
+      type: project.writingType,
+      topic: project.title,
+      targetWords: project.targetWords,
+      style: project.style,
+      knowledgeBaseId: project.knowledgeBaseId ?? undefined,
+      modelConfigId: request.modelConfigId,
+      plan: project.plan ?? undefined,
+    });
+    const content = await reviseDocument(writingModel, latestVersion.content, instruction, {
+      signal: abortController.signal,
+    });
+    const wordCount = tokenCounter.countWords(content);
+    const versionId = randomUUID();
+    const versionNumber = latestVersion.versionNumber + 1;
+    const now = new Date().toISOString();
+
+    await db.insert(writingVersions).values({
+      id: versionId,
+      projectId: request.projectId,
+      versionNumber,
+      content,
+      wordCount,
+      changeSummary: instruction,
+      createdAt: now,
+    });
+
+    await db
+      .update(writingProjects)
+      .set({
+        status: 'done',
+        updatedAt: now,
+      })
+      .where(eq(writingProjects.id, request.projectId));
+
+    return {
+      projectId: request.projectId,
+      content,
+      wordCount,
+      versionId,
+      versionNumber,
+    };
+  } finally {
+    if (currentWritingAbort === abortController) currentWritingAbort = null;
+  }
+}
+
 async function createWritingModel(request: WritingRequest) {
   const writingConfig = await keychain.getWritingApiConfig(request.modelConfigId);
   if (!hasUsableApiConfig(writingConfig)) {
@@ -240,4 +351,28 @@ async function createRetriever(request: WritingRequest): Promise<Retriever | nul
   const store = new VectorStore(storePath);
   await store.connect();
   return new Retriever(store, embedModel);
+}
+
+function hydrateProject(project: typeof writingProjects.$inferSelect): WritingProject {
+  return {
+    id: project.id,
+    title: project.title,
+    writingType: project.writingType as WritingProject['writingType'],
+    targetWords: project.targetWords ?? 2000,
+    style: (project.style ?? 'formal') as WritingProject['style'],
+    knowledgeBaseId: project.knowledgeBaseId,
+    status: (project.status ?? 'draft') as WritingProject['status'],
+    plan: parsePlan(project.plan),
+    createdAt: project.createdAt,
+    updatedAt: project.updatedAt,
+  };
+}
+
+function parsePlan(value: string | null): WritingPlan | null {
+  if (!value) return null;
+  try {
+    return JSON.parse(value) as WritingPlan;
+  } catch {
+    return null;
+  }
 }

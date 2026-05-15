@@ -23,3 +23,13 @@ export function resolveWordCountSelection(value: string, currentTargetWords: num
 
   return sanitizeTargetWords(Number(value));
 }
+
+export function inferTargetWordsFromText(text: string, fallbackTargetWords: number): number {
+  const candidates = [
+    ...text.matchAll(/([1-9]\d{1,4})\s*(?:个)?\s*字\s*(?:以内|内|以下|左右|上下)?/gu),
+  ];
+  if (candidates.length === 0) return sanitizeTargetWords(fallbackTargetWords);
+
+  const value = Number(candidates[0][1]);
+  return sanitizeTargetWords(value);
+}

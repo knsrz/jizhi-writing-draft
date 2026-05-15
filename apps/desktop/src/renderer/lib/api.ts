@@ -16,6 +16,7 @@ export const api = {
   startWriting: (req: unknown) => w.api.startWriting(req),
   createWritingPlan: (req: unknown) => w.api.createWritingPlan(req),
   executeWritingPlan: (req: unknown) => w.api.executeWritingPlan(req),
+  reviseWriting: (req: unknown) => w.api.reviseWriting(req),
   cancelWriting: () => w.api.cancelWriting(),
   onWritingPlan: (cb: (plan: unknown) => void) => w.api.onWritingPlan(cb),
   onWritingSection: (cb: (section: unknown) => void) => w.api.onWritingSection(cb),
@@ -26,8 +27,10 @@ export const api = {
     w.api.retrySection(projectId, sectionIndex),
 
   listProjects: () => w.api.listProjects(),
+  getProject: (projectId: string) => w.api.getProject(projectId),
 
   listVersions: (projectId: string) => w.api.listVersions(projectId),
+  getLatestProjectVersion: (projectId: string) => w.api.getLatestProjectVersion(projectId),
   getVersion: (versionId: string) => w.api.getVersion(versionId),
   restoreVersion: (versionId: string) => w.api.restoreVersion(versionId),
 

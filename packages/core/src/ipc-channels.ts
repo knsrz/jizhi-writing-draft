@@ -20,11 +20,14 @@ export const IpcChannel = {
   WRITING_DONE: 'writing:done',
   WRITING_ERROR: 'writing:error',
   WRITING_RETRY_SECTION: 'writing:retry-section',
+  WRITING_REVISE: 'writing:revise',
 
   PROJECT_LIST: 'project:list',
+  PROJECT_GET: 'project:get',
 
   VERSION_LIST: 'version:list',
   VERSION_GET: 'version:get',
+  VERSION_LATEST: 'version:latest',
   VERSION_RESTORE: 'version:restore',
 
   EXPORT_MD: 'export:md',

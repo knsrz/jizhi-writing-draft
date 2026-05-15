@@ -1,10 +1,10 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Sidebar } from './components/ui/sidebar';
-import WritingPage from './pages/Writing';
-import SettingsPage from './pages/Settings';
+import HistoryPage from './pages/History';
 import KnowledgePage from './pages/Knowledge';
 import KnowledgeDetailPage from './pages/KnowledgeDetail';
-import HistoryPage from './pages/History';
+import SettingsPage from './pages/Settings';
+import WritingPage from './pages/Writing';
 
 export default function App() {
   return (
@@ -17,6 +17,7 @@ export default function App() {
             <Route path="/knowledge" element={<KnowledgePage />} />
             <Route path="/knowledge/:id" element={<KnowledgeDetailPage />} />
             <Route path="/history" element={<HistoryPage />} />
+            <Route path="/history/:projectId" element={<WritingPage />} />
             <Route path="/settings" element={<SettingsPage />} />
           </Routes>
         </main>

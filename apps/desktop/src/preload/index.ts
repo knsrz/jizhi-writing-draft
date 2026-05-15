@@ -22,6 +22,7 @@ const api = {
   startWriting: (req: unknown) => ipcRenderer.invoke(IpcChannel.WRITING_START, req),
   createWritingPlan: (req: unknown) => ipcRenderer.invoke(IpcChannel.WRITING_CREATE_PLAN, req),
   executeWritingPlan: (req: unknown) => ipcRenderer.invoke(IpcChannel.WRITING_EXECUTE, req),
+  reviseWriting: (req: unknown) => ipcRenderer.invoke(IpcChannel.WRITING_REVISE, req),
   cancelWriting: () => ipcRenderer.invoke(IpcChannel.WRITING_CANCEL),
   onWritingPlan: (cb: (plan: unknown) => void) => {
     const handler = (_: unknown, p: unknown) => cb(p);
@@ -53,9 +54,12 @@ const api = {
 
   // Projects
   listProjects: () => ipcRenderer.invoke(IpcChannel.PROJECT_LIST),
+  getProject: (projectId: string) => ipcRenderer.invoke(IpcChannel.PROJECT_GET, projectId),
 
   // Versions
   listVersions: (projectId: string) => ipcRenderer.invoke(IpcChannel.VERSION_LIST, projectId),
+  getLatestProjectVersion: (projectId: string) =>
+    ipcRenderer.invoke(IpcChannel.VERSION_LATEST, projectId),
   getVersion: (versionId: string) => ipcRenderer.invoke(IpcChannel.VERSION_GET, versionId),
   restoreVersion: (versionId: string) => ipcRenderer.invoke(IpcChannel.VERSION_RESTORE, versionId),
 

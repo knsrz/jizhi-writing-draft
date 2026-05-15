@@ -1,5 +1,16 @@
-import { STYLE_LABELS, WRITING_TYPE_LABELS } from '@app/core';
-import { CheckCircle2, Download, FileText, Loader2, Plus, RotateCcw, Square } from 'lucide-react';
+import { STYLE_LABELS, WRITING_STATUS_LABELS, WRITING_TYPE_LABELS } from '@app/core';
+import {
+  CheckCircle2,
+  Download,
+  FileText,
+  Loader2,
+  Plus,
+  RotateCcw,
+  Sparkles,
+  Square,
+} from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { WritingForm } from '../components/writing/WritingForm';
 import { WritingOutput } from '../components/writing/WritingOutput';
 import { WritingPlanEditor } from '../components/writing/WritingPlanEditor';
@@ -7,18 +18,14 @@ import { WritingPlanPanel } from '../components/writing/WritingPlanPanel';
 import { api } from '../lib/api';
 import { cn } from '../lib/utils';
 import { useWritingStore } from '../store/writing';
-
-const statusLabels = {
-  idle: '待开始',
-  planning: '规划中',
-  reviewing: '待确认',
-  writing: '写作中',
-  polishing: '润色中',
-  done: '已完成',
-  error: '出错',
-};
+import { shouldLoadHistoryProject } from './writing-navigation';
 
 export default function WritingPage() {
+  const navigate = useNavigate();
+  const { projectId: routeProjectId } = useParams();
+  const [revisionInstruction, setRevisionInstruction] = useState('');
+  const [now, setNow] = useState(() => Date.now());
+  const loadedRouteProjectId = useRef<string | null>(null);
   const {
     status,
     type,
@@ -31,15 +38,62 @@ export default function WritingPage() {
     fullText,
     projectId,
     error,
+    stageMessage,
+    stageStartedAt,
     updatePlan,
     startWriting,
     confirmPlan,
+    loadProject,
+    revise,
     reset,
   } = useWritingStore();
 
   const isActive = status === 'planning' || status === 'writing' || status === 'polishing';
   const showWorkbench =
     isActive || status === 'reviewing' || status === 'done' || status === 'error';
+  const isRevising = status === 'polishing';
+  const showSlowStageHint = isActive && stageStartedAt !== null && now - stageStartedAt > 30_000;
+
+  useEffect(() => {
+    if (!routeProjectId) {
+      loadedRouteProjectId.current = null;
+      return;
+    }
+    if (!shouldLoadHistoryProject(routeProjectId, loadedRouteProjectId.current)) return;
+    loadedRouteProjectId.current = routeProjectId;
+    void loadProject(routeProjectId);
+  }, [loadProject, routeProjectId]);
+
+  useEffect(() => {
+    if (routeProjectId || status !== 'done' || !projectId) return;
+    navigate(`/history/${projectId}`, { replace: true });
+  }, [navigate, projectId, routeProjectId, status]);
+
+  useEffect(() => {
+    if (!isActive) return;
+    const timer = window.setInterval(() => setNow(Date.now()), 5000);
+    return () => window.clearInterval(timer);
+  }, [isActive]);
+
+  const handleNewWriting = () => {
+    setRevisionInstruction('');
+    reset({ clearForm: true });
+    navigate('/');
+  };
+
+  const handleReturnToDraft = () => {
+    setRevisionInstruction('');
+    reset();
+    navigate('/');
+  };
+
+  const handleRevise = () => {
+    const instruction = revisionInstruction.trim();
+    if (!instruction || isRevising) return;
+    void revise(instruction).then(() => {
+      if (useWritingStore.getState().status === 'done') setRevisionInstruction('');
+    });
+  };
 
   return (
     <div className="flex min-h-full flex-col bg-[#f7f8fb] text-slate-900">
@@ -70,7 +124,7 @@ export default function WritingPage() {
                       : 'bg-slate-100 text-slate-600',
               )}
             >
-              {statusLabels[status]}
+              {WRITING_STATUS_LABELS[status]}
             </span>
           </div>
         </div>
@@ -111,8 +165,20 @@ export default function WritingPage() {
                       </p>
                       <h2 className="mt-1 text-lg font-semibold text-slate-900">生成内容</h2>
                     </div>
-                    <div className="text-sm text-slate-500">{Math.round(progress)}%</div>
+                    <div className="text-right text-sm text-slate-500">
+                      <div>{Math.round(progress)}%</div>
+                      {stageMessage && (
+                        <div className="mt-1 max-w-72 text-xs leading-5 text-slate-400">
+                          {stageMessage}
+                        </div>
+                      )}
+                    </div>
                   </div>
+                  {showSlowStageHint && (
+                    <div className="mt-3 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs leading-5 text-amber-800">
+                      当前阶段耗时较长，模型仍在处理；如果长时间没有新内容，可以停止后重试。
+                    </div>
+                  )}
                 </div>
 
                 {status === 'reviewing' && plan ? (
@@ -152,20 +218,55 @@ export default function WritingPage() {
                     </div>
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-slate-500">状态</span>
-                      <span className="font-medium text-slate-800">{statusLabels[status]}</span>
+                      <span className="font-medium text-slate-800">
+                        {WRITING_STATUS_LABELS[status]}
+                      </span>
                     </div>
+                    {stageMessage && (
+                      <div className="rounded-md bg-slate-50 px-3 py-2 text-xs leading-5 text-slate-500">
+                        {stageMessage}
+                      </div>
+                    )}
                   </div>
                 </div>
 
                 {isActive && (
                   <button
                     type="button"
-                    onClick={reset}
+                    onClick={handleReturnToDraft}
                     className="flex w-full items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
                   >
                     <Square className="h-4 w-4" />
                     停止写作
                   </button>
+                )}
+
+                {(status === 'done' || status === 'polishing') && projectId && (
+                  <div className="rounded-lg border border-slate-200 bg-white p-4">
+                    <p className="text-xs font-medium uppercase tracking-[0.16em] text-slate-400">
+                      Revise
+                    </p>
+                    <textarea
+                      value={revisionInstruction}
+                      onChange={(event) => setRevisionInstruction(event.target.value)}
+                      disabled={isRevising}
+                      className="mt-3 min-h-24 w-full resize-y rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm leading-6 text-slate-700 outline-none focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100 disabled:opacity-60"
+                      placeholder="告诉 Agent 继续修改，例如：语气更正式，压缩到 1000 字，补充风险分析..."
+                    />
+                    <button
+                      type="button"
+                      onClick={handleRevise}
+                      disabled={!revisionInstruction.trim() || isRevising}
+                      className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      {isRevising ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Sparkles className="h-4 w-4" />
+                      )}
+                      {isRevising ? '修改中' : '让 Agent 继续修改'}
+                    </button>
+                  </div>
                 )}
 
                 {status === 'reviewing' && plan && (
@@ -180,7 +281,7 @@ export default function WritingPage() {
                     </button>
                     <button
                       type="button"
-                      onClick={reset}
+                      onClick={handleReturnToDraft}
                       className="flex w-full items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
                     >
                       <RotateCcw className="h-4 w-4" />
@@ -209,7 +310,7 @@ export default function WritingPage() {
                     </button>
                     <button
                       type="button"
-                      onClick={reset}
+                      onClick={handleNewWriting}
                       className="flex w-full items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
                     >
                       <Plus className="h-4 w-4" />
@@ -221,7 +322,7 @@ export default function WritingPage() {
                 {status === 'error' && (
                   <button
                     type="button"
-                    onClick={reset}
+                    onClick={handleReturnToDraft}
                     className="flex w-full items-center justify-center gap-2 rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-slate-800"
                   >
                     <RotateCcw className="h-4 w-4" />
