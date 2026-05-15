@@ -17,9 +17,7 @@ export default function HistoryPage() {
     <div className="min-h-full bg-[#eef4fb] px-8 py-8 text-slate-950">
       <div className="mx-auto max-w-5xl space-y-6">
         <header>
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600">
-            History
-          </p>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600">History</p>
           <h1 className="mt-2 text-3xl font-semibold text-slate-950">写作历史</h1>
           <p className="mt-2 text-sm text-slate-500">查看已生成、修订和导出的写作项目。</p>
         </header>
@@ -42,12 +40,12 @@ export default function HistoryPage() {
                 className="w-full rounded-2xl border border-slate-200/80 bg-white p-5 text-left shadow-sm shadow-slate-200/60 transition hover:border-blue-200 hover:bg-blue-50/50 hover:shadow-md hover:shadow-blue-100/60"
               >
                 <div className="flex items-center justify-between gap-4">
-                  <div className="flex items-center gap-4">
+                  <div className="flex min-w-0 items-center gap-4">
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-blue-50 text-blue-600">
                       <FileText className="h-5 w-5" />
                     </div>
-                    <div>
-                      <h3 className="font-medium text-slate-800">{p.title}</h3>
+                    <div className="min-w-0">
+                      <h3 className="truncate font-medium text-slate-800">{p.title}</h3>
                       <div className="mt-1 flex items-center gap-3">
                         <span className="text-xs text-slate-400">
                           {WRITING_TYPE_LABELS[p.writingType]}
@@ -67,7 +65,7 @@ export default function HistoryPage() {
                       </div>
                     </div>
                   </div>
-                  <span className="text-xs text-slate-400">
+                  <span className="shrink-0 text-xs text-slate-400">
                     {new Date(p.createdAt).toLocaleString('zh-CN')}
                   </span>
                 </div>
