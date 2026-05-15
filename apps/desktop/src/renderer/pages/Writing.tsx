@@ -96,14 +96,14 @@ export default function WritingPage() {
   };
 
   return (
-    <div className="flex min-h-full flex-col bg-[#f7f8fb] text-slate-900">
-      <header className="border-b border-slate-200 bg-white/90 px-8 py-4">
+    <div className="flex min-h-full flex-col bg-[#eef4fb] text-slate-950">
+      <header className="border-b border-white/70 bg-white/80 px-8 py-5 shadow-sm shadow-slate-200/60 backdrop-blur">
         <div className="flex items-center justify-between gap-4">
           <div>
-            <p className="text-xs font-medium uppercase tracking-[0.18em] text-slate-400">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600">
               Writing desk
             </p>
-            <h1 className="mt-1 text-xl font-semibold">极致写作</h1>
+            <h1 className="mt-1 text-2xl font-semibold tracking-tight">极致写作</h1>
           </div>
           <div className="flex items-center gap-2 text-sm">
             <span className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-slate-600">
@@ -138,12 +138,12 @@ export default function WritingPage() {
         )}
 
         {showWorkbench && (
-          <div className="grid min-h-[calc(100vh-73px)] grid-cols-[300px_minmax(0,1fr)_280px] gap-6 px-6 py-6">
+          <div className="grid min-h-[calc(100vh-81px)] grid-cols-[320px_minmax(0,1fr)_300px] gap-6 px-6 py-6">
             <aside className="min-h-0 overflow-y-auto">
               {plan ? (
                 <WritingPlanPanel plan={plan} currentSectionIndex={currentSectionIndex} />
               ) : (
-                <div className="rounded-lg border border-slate-200 bg-white p-4">
+                <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm shadow-slate-200/60">
                   <p className="text-xs font-medium uppercase tracking-[0.16em] text-slate-400">
                     Plan
                   </p>
@@ -201,7 +201,7 @@ export default function WritingPage() {
 
             <aside className="min-h-0 overflow-y-auto">
               <div className="space-y-4">
-                <div className="rounded-lg border border-slate-200 bg-white p-4">
+                <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm shadow-slate-200/60">
                   <p className="text-xs font-medium uppercase tracking-[0.16em] text-slate-400">
                     Run
                   </p>
@@ -234,7 +234,7 @@ export default function WritingPage() {
                   <button
                     type="button"
                     onClick={handleReturnToDraft}
-                    className="flex w-full items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
                   >
                     <Square className="h-4 w-4" />
                     停止写作
@@ -253,19 +253,21 @@ export default function WritingPage() {
                       className="mt-3 min-h-24 w-full resize-y rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm leading-6 text-slate-700 outline-none focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100 disabled:opacity-60"
                       placeholder="告诉 Agent 继续修改，例如：语气更正式，压缩到 1000 字，补充风险分析..."
                     />
-                    <button
-                      type="button"
-                      onClick={handleRevise}
-                      disabled={!revisionInstruction.trim() || isRevising}
-                      className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                      {isRevising ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <Sparkles className="h-4 w-4" />
-                      )}
-                      {isRevising ? '修改中' : '让 Agent 继续修改'}
-                    </button>
+                    <div className="mt-3">
+                      <button
+                        type="button"
+                        onClick={handleRevise}
+                        disabled={!revisionInstruction.trim() || isRevising}
+                        className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        {isRevising ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Sparkles className="h-4 w-4" />
+                        )}
+                        {isRevising ? '修改中' : '让 Agent 继续修改'}
+                      </button>
+                    </div>
                   </div>
                 )}
 
@@ -274,7 +276,7 @@ export default function WritingPage() {
                     <button
                       type="button"
                       onClick={confirmPlan}
-                      className="flex w-full items-center justify-center gap-2 rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-slate-800"
+                      className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       <CheckCircle2 className="h-4 w-4" />
                       确认并开始写作
@@ -282,7 +284,7 @@ export default function WritingPage() {
                     <button
                       type="button"
                       onClick={handleReturnToDraft}
-                      className="flex w-full items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                      className="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
                     >
                       <RotateCcw className="h-4 w-4" />
                       返回修改目标
@@ -295,7 +297,7 @@ export default function WritingPage() {
                     <button
                       type="button"
                       onClick={() => projectId && api.exportDocx(projectId)}
-                      className="flex w-full items-center justify-center gap-2 rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-slate-800"
+                      className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       <Download className="h-4 w-4" />
                       导出 Word
@@ -303,7 +305,7 @@ export default function WritingPage() {
                     <button
                       type="button"
                       onClick={() => projectId && api.exportMarkdown(projectId)}
-                      className="flex w-full items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                      className="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
                     >
                       <FileText className="h-4 w-4" />
                       导出 Markdown
@@ -311,7 +313,7 @@ export default function WritingPage() {
                     <button
                       type="button"
                       onClick={handleNewWriting}
-                      className="flex w-full items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                      className="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
                     >
                       <Plus className="h-4 w-4" />
                       新建写作
@@ -323,7 +325,7 @@ export default function WritingPage() {
                   <button
                     type="button"
                     onClick={handleReturnToDraft}
-                    className="flex w-full items-center justify-center gap-2 rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-slate-800"
+                    className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <RotateCcw className="h-4 w-4" />
                     重新开始

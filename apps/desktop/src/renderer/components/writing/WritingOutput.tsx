@@ -22,7 +22,7 @@ export function WritingOutput({
 }) {
   if (fullText) {
     return (
-      <article className="rounded-lg border border-slate-200 bg-white shadow-sm">
+      <article className="rounded-2xl border border-slate-200/80 bg-white shadow-lg shadow-slate-200/60">
         <header className="flex items-center gap-3 border-b border-slate-100 px-5 py-3">
           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-700">
             <CheckCircle2 className="h-4 w-4" />
@@ -41,7 +41,7 @@ export function WritingOutput({
 
   if (sections.length === 0) {
     return (
-      <div className="flex min-h-[420px] items-center justify-center rounded-lg border border-dashed border-slate-300 bg-white">
+      <div className="flex min-h-[420px] items-center justify-center rounded-2xl border border-dashed border-blue-200 bg-white/80 shadow-sm shadow-slate-200/60">
         <div className="text-center">
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 text-slate-500">
             <Sparkles className="h-5 w-5" />
@@ -56,7 +56,7 @@ export function WritingOutput({
     <div className="space-y-4">
       <div className="overflow-hidden rounded-full bg-slate-200">
         <div
-          className="h-1.5 rounded-full bg-blue-600 transition-all duration-500"
+          className="h-2 rounded-full bg-gradient-to-r from-blue-600 to-emerald-500 transition-all duration-500"
           style={{ width: `${progress}%` }}
         />
       </div>

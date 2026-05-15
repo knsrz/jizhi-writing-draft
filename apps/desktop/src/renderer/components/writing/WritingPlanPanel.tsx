@@ -10,18 +10,18 @@ export function WritingPlanPanel({
   currentSectionIndex?: number;
 }) {
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <div>
-        <p className="text-xs font-medium uppercase tracking-[0.16em] text-slate-400">Plan</p>
-        <h2 className="mt-1 text-lg font-semibold text-slate-900">写作计划</h2>
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-600">Plan</p>
+        <h2 className="mt-1 text-lg font-semibold text-slate-950">写作计划</h2>
       </div>
 
       <div className="space-y-3 text-sm">
-        <div className="rounded-lg border border-slate-200 bg-white p-3">
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm shadow-slate-200/60">
           <div className="text-xs font-medium text-slate-400">目标</div>
           <p className="mt-1 leading-6 text-slate-700">{plan.goal}</p>
         </div>
-        <div className="rounded-lg border border-slate-200 bg-white p-3">
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm shadow-slate-200/60">
           <div className="text-xs font-medium text-slate-400">读者</div>
           <p className="mt-1 leading-6 text-slate-700">{plan.audience}</p>
         </div>
@@ -36,8 +36,8 @@ export function WritingPlanPanel({
             <div
               key={`${section.title}-${section.targetWords}-${section.keywords.join('|')}`}
               className={cn(
-                'rounded-lg border bg-white p-3 transition-colors',
-                isActive ? 'border-blue-300 bg-blue-50/60' : 'border-slate-200',
+                'rounded-2xl border bg-white p-4 shadow-sm shadow-slate-200/50 transition-colors',
+                isActive ? 'border-blue-300 bg-blue-50/70 ring-2 ring-blue-100' : 'border-slate-200/80',
               )}
             >
               <div className="flex items-start gap-3">

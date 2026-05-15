@@ -10,7 +10,7 @@ export function WritingPlanEditor({
   onChange: (plan: WritingPlan) => void;
 }) {
   return (
-    <div className="rounded-lg border border-slate-200 bg-white shadow-sm">
+    <div className="rounded-2xl border border-slate-200/80 bg-white shadow-lg shadow-slate-200/60">
       <div className="border-b border-slate-100 px-5 py-4">
         <p className="text-xs font-medium uppercase tracking-[0.16em] text-slate-400">
           Review plan
@@ -25,7 +25,7 @@ export function WritingPlanEditor({
           <textarea
             value={plan.goal}
             onChange={(event) => onChange(updateWritingPlan(plan, { goal: event.target.value }))}
-            className="min-h-20 w-full resize-y rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm leading-6 outline-none focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
+            className="min-h-20 w-full resize-y rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm leading-6 outline-none focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
           />
         </label>
 
@@ -36,7 +36,7 @@ export function WritingPlanEditor({
             onChange={(event) =>
               onChange(updateWritingPlan(plan, { audience: event.target.value }))
             }
-            className="min-h-16 w-full resize-y rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm leading-6 outline-none focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
+            className="min-h-16 w-full resize-y rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm leading-6 outline-none focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
           />
         </label>
 
@@ -51,7 +51,7 @@ export function WritingPlanEditor({
             <button
               type="button"
               onClick={() => onChange(addPlanSection(plan))}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
             >
               <Plus className="h-4 w-4" />
               添加章节
@@ -87,7 +87,7 @@ export function WritingPlanEditor({
                     onChange={(event) =>
                       onChange(updatePlanSection(plan, index, { title: event.target.value }))
                     }
-                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
                   />
                 </label>
 
@@ -104,7 +104,7 @@ export function WritingPlanEditor({
                         }),
                       )
                     }
-                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
                   />
                 </label>
 
@@ -122,7 +122,7 @@ export function WritingPlanEditor({
                         }),
                       )
                     }
-                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
                     placeholder="用逗号分隔"
                   />
                 </label>
@@ -160,7 +160,7 @@ export function WritingPlanEditor({
                 }),
               )
             }
-            className="min-h-16 w-full resize-y rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm leading-6 outline-none focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
+            className="min-h-16 w-full resize-y rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm leading-6 outline-none focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-100"
             placeholder="每行一条，可留空"
           />
         </label>
