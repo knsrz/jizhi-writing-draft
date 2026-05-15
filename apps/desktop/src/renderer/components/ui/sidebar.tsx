@@ -1,4 +1,5 @@
 import { History, Library, PenLine, Settings } from 'lucide-react';
+import appIcon from '../../assets/app-icon.svg';
 import { NavLink, useLocation } from 'react-router-dom';
 import { shouldResetWritingNav } from '../../pages/writing-navigation';
 import { useWritingStore } from '../../store/writing';
@@ -21,24 +22,37 @@ export function Sidebar() {
   };
 
   return (
-    <aside className="w-16 h-screen bg-slate-900 flex flex-col items-center py-4 gap-1">
-      {navItems.map(({ to, label, icon: Icon }) => (
-        <NavLink
-          key={to}
-          to={to}
-          onClick={to === '/' ? handleWritingClick : undefined}
-          className={({ isActive }) =>
-            `w-12 h-12 flex flex-col items-center justify-center rounded-lg transition-colors ${
-              isActive
-                ? 'bg-blue-600 text-white'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800'
-            }`
-          }
-        >
-          <Icon className="w-5 h-5" />
-          <span className="text-[10px] mt-0.5">{label}</span>
-        </NavLink>
-      ))}
+    <aside className="flex h-screen w-20 shrink-0 flex-col items-center border-r border-white/10 bg-[#07111f] px-3 py-4 text-white shadow-2xl shadow-slate-950/20">
+      <div className="mb-6 flex flex-col items-center gap-2">
+        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/10 ring-1 ring-white/15">
+          <img src={appIcon} alt="极致写作" className="h-9 w-9 rounded-xl" />
+        </div>
+        <span className="text-[10px] font-semibold tracking-[0.16em] text-slate-400">JIZHI</span>
+      </div>
+
+      <nav className="flex flex-1 flex-col items-center gap-2">
+        {navItems.map(({ to, label, icon: Icon }) => (
+          <NavLink
+            key={to}
+            to={to}
+            onClick={to === '/' ? handleWritingClick : undefined}
+            className={({ isActive }) =>
+              `group flex h-14 w-14 flex-col items-center justify-center rounded-2xl text-[11px] transition-all ${
+                isActive
+                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-950/30'
+                  : 'text-slate-400 hover:bg-white/8 hover:text-white'
+              }`
+            }
+          >
+            <Icon className="h-5 w-5" />
+            <span className="mt-1 leading-none">{label}</span>
+          </NavLink>
+        ))}
+      </nav>
+
+      <div className="mt-6 rounded-full border border-white/10 px-2 py-1 text-[10px] text-slate-500">
+        v0.1
+      </div>
     </aside>
   );
 }
