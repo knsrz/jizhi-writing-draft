@@ -199,21 +199,6 @@ Desktop app entry point:
 - Knowledge-base vectors are stored locally in LanceDB.
 - The open-source self-configured edition does not include official accounts, subscriptions, cloud sync, or hosted model credits.
 
-## Roadmap
-
-- [x] Electron desktop client
-- [x] OpenAI-compatible model configuration
-- [x] Writing plan generation and human confirmation
-- [x] Section-by-section writing, fact-checking, and polishing
-- [x] Local knowledge base and RAG retrieval
-- [x] Markdown / DOCX export
-- [x] Writing history and version storage
-- [ ] Installer packaging and release workflow
-- [ ] More complete knowledge-base source citation
-- [ ] Better batch document import experience
-- [ ] OCR, PPT, Excel, and more document formats
-- [ ] Commercial account, subscription, quota, and cloud sync capabilities
-
 ## Contributing
 
 Contributions are welcome in areas such as:
@@ -251,13 +236,8 @@ Yes. You can use the Ollama preset or enter any OpenAI-compatible endpoint. The 
 
 ### Are prebuilt installers available?
 
-The repository is currently focused on source development and MVP validation. Installer packaging and formal release workflow are still on the roadmap.
+The repository is currently focused on source development and MVP validation. Installer packaging and formal release workflow are not complete yet.
 
 ### What is the license?
 
-This repository does not currently include a `LICENSE` file. Before public release, an explicit open-source license should be added.
-
-## README Design References
-
-This README follows common patterns from GitHub's official README guidance and popular repositories such as Next.js, Vite, and Supabase: state the value proposition first, establish credibility with badges, provide quick-start commands, then document architecture, packages, roadmap, and contribution paths.
-
+This project is released under the [Apache License 2.0](./LICENSE).
