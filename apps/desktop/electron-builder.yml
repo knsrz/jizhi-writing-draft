@@ -1,0 +1,44 @@
+appId: com.knsrz.jizhi-writing
+productName: 极致写作
+copyright: Copyright © 2026 knsrz
+
+directories:
+  output: release
+  buildResources: build
+
+files:
+  - out/**/*
+  - package.json
+
+asarUnpack:
+  - "**/*.node"
+
+npmRebuild: true
+buildDependenciesFromSource: false
+
+mac:
+  category: public.app-category.productivity
+  icon: build/icon.icns
+  identity: "-"
+  target:
+    - target: dmg
+      arch:
+        - arm64
+
+dmg:
+  artifactName: Jizhi-Writing-${version}-mac-${arch}.${ext}
+
+win:
+  icon: build/icon.ico
+  target:
+    - target: nsis
+      arch:
+        - x64
+
+nsis:
+  artifactName: Jizhi-Writing-${version}-win-${arch}.${ext}
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  shortcutName: 极致写作
+  uninstallDisplayName: 极致写作

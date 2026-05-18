@@ -10,6 +10,9 @@
   "scripts": {
     "dev": "pnpm --filter @app/desktop dev",
     "build": "pnpm --filter @app/desktop build",
+    "dist": "pnpm --filter @app/desktop dist",
+    "dist:mac": "pnpm --filter @app/desktop dist:mac",
+    "dist:win": "pnpm --filter @app/desktop dist:win",
     "lint": "biome check .",
     "format": "biome check --write .",
     "typecheck": "pnpm -r typecheck",
