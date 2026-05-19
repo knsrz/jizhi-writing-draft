@@ -23,6 +23,7 @@
     <link rel="icon" href="assets/app-icon.png" />
     <link rel="apple-touch-icon" href="assets/app-icon.png" />
     <link rel="stylesheet" href="styles.css" />
+    <script src="preview-tabs.js" defer></script>
   </head>
   <body>
     <header class="site-header">
@@ -87,31 +88,56 @@
         </div>
 
         <div class="hero-visual" aria-label="极致写作桌面界面预览">
-          <div class="mode-switcher" aria-hidden="true">
-            <span class="active">
+          <div class="mode-switcher" role="tablist" aria-label="界面预览模式">
+            <button
+              class="active"
+              type="button"
+              role="tab"
+              aria-controls="preview-panel"
+              aria-selected="true"
+              data-preview-tab="plan"
+            >
               <svg aria-hidden="true" viewBox="0 0 24 24">
                 <path d="M4 5h16v14H4zM8 9h8M8 13h5" />
               </svg>
               写作规划
-            </span>
-            <span>
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-controls="preview-panel"
+              aria-selected="false"
+              data-preview-tab="knowledge"
+            >
               <svg aria-hidden="true" viewBox="0 0 24 24">
                 <path d="M5 7h14M5 12h14M5 17h10" />
               </svg>
               知识库
-            </span>
-            <span>
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-controls="preview-panel"
+              aria-selected="false"
+              data-preview-tab="export"
+            >
               <svg aria-hidden="true" viewBox="0 0 24 24">
                 <path d="M12 4v12m0 0 4-4m-4 4-4-4M5 20h14" />
               </svg>
               导出
-            </span>
-            <span>
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-controls="preview-panel"
+              aria-selected="false"
+              data-preview-tab="models"
+            >
               <svg aria-hidden="true" viewBox="0 0 24 24">
                 <path d="M7 8h10M7 16h10M5 12h14" />
               </svg>
               多模型
-            </span>
+            </button>
           </div>
 
           <div class="app-window">
@@ -137,30 +163,30 @@
                 <div class="side-item small">设置</div>
               </aside>
 
-              <section class="workspace-preview">
+              <section class="workspace-preview" id="preview-panel" role="tabpanel" aria-live="polite">
                 <div class="workspace-topline">
                   <span class="status-dot"></span>
-                  正在生成年度工作总结
+                  <span data-preview-status>正在生成年度工作总结</span>
                 </div>
-                <h2>先规划，再分段写作</h2>
-                <div class="prompt-box">
+                <h2 data-preview-title>先规划，再分段写作</h2>
+                <div class="prompt-box" data-preview-prompt>
                   请结合部门项目资料，生成一篇正式、清晰、可提交的年度工作总结。
                 </div>
                 <div class="plan-grid">
-                  <article>
-                    <span>01</span>
-                    <strong>梳理重点成果</strong>
-                    <p>从知识库中提取项目进度、业务指标和关键事件。</p>
+                  <article data-preview-step>
+                    <span data-preview-step-index>01</span>
+                    <strong data-preview-step-title>梳理重点成果</strong>
+                    <p data-preview-step-body>从知识库中提取项目进度、业务指标和关键事件。</p>
                   </article>
-                  <article>
-                    <span>02</span>
-                    <strong>分段生成正文</strong>
-                    <p>按章节逐段起草，实时回传当前章节和完成进度。</p>
+                  <article data-preview-step>
+                    <span data-preview-step-index>02</span>
+                    <strong data-preview-step-title>分段生成正文</strong>
+                    <p data-preview-step-body>按章节逐段起草，实时回传当前章节和完成进度。</p>
                   </article>
-                  <article>
-                    <span>03</span>
-                    <strong>事实校正与润色</strong>
-                    <p>结合检索资料降低事实漂移，并统一正式文风。</p>
+                  <article data-preview-step>
+                    <span data-preview-step-index>03</span>
+                    <strong data-preview-step-title>事实校正与润色</strong>
+                    <p data-preview-step-body>结合检索资料降低事实漂移，并统一正式文风。</p>
                   </article>
                 </div>
                 <div class="progress-row" aria-hidden="true">
@@ -168,16 +194,16 @@
                 </div>
               </section>
 
-              <aside class="context-preview" aria-hidden="true">
-                <div class="context-card">
-                  <span>知识库引用</span>
-                  <strong>4 份资料命中</strong>
-                  <p>项目周报、会议纪要、竞品报告、制度模板</p>
+              <aside class="context-preview">
+                <div class="context-card" data-preview-context>
+                  <span data-preview-context-label>知识库引用</span>
+                  <strong data-preview-context-title>4 份资料命中</strong>
+                  <p data-preview-context-body>项目周报、会议纪要、竞品报告、制度模板</p>
                 </div>
-                <div class="context-card accent">
-                  <span>输出格式</span>
-                  <strong>Markdown / DOCX</strong>
-                  <p>生成后可继续编辑、归档或提交。</p>
+                <div class="context-card accent" data-preview-context>
+                  <span data-preview-context-label>输出格式</span>
+                  <strong data-preview-context-title>Markdown / DOCX</strong>
+                  <p data-preview-context-body>生成后可继续编辑、归档或提交。</p>
                 </div>
               </aside>
             </div>
