@@ -40,7 +40,7 @@ It is suitable for work summaries, research reports, project proposals, meeting 
 | Section-by-section generation | Draft each section in order while streaming progress and current section updates back to the app. |
 | Sub-Agent polishing | Run fact-checking and language polishing after each section to reduce quality drift. |
 | Local knowledge base | Upload, parse, chunk, embed, and retrieve PDF, DOCX, TXT, and Markdown documents. |
-| OpenAI-compatible models | Use OpenAI, DeepSeek, SiliconFlow, OpenRouter, Ollama, or any custom compatible endpoint. |
+| OpenAI-compatible models | Use OpenAI, Gemini, DeepSeek, DashScope, SiliconFlow, OpenRouter, Ollama, and other mainstream compatible endpoints. |
 | Secure configuration | Configure writing and embedding models separately. API keys are stored in system secure storage instead of plaintext databases. |
 | Version history | Save writing projects, generated drafts, and later revisions as versioned records. |
 | Document export | Export finished drafts to Markdown or DOCX. |
@@ -114,8 +114,8 @@ pnpm dev
 ### First Run
 
 1. Open the Settings page.
-2. Configure a writing model: choose OpenAI, DeepSeek, SiliconFlow, OpenRouter, Ollama, or a custom OpenAI-compatible endpoint.
-3. Configure an embedding model: document upload, vectorization, and retrieval depend on this setting.
+2. Configure a writing model: choose OpenAI, Gemini, DeepSeek, DashScope, SiliconFlow, OpenRouter, Ollama, or a custom OpenAI-compatible endpoint.
+3. Configure an embedding model: choose an endpoint that supports embeddings, such as OpenAI, Gemini, SiliconFlow, Jina, Voyage AI, or Ollama.
 4. Run the connection test to confirm the model is available.
 5. Optional: create a knowledge base and upload PDF, DOCX, TXT, or Markdown files.
 6. Return to the Writing page, enter your request, generate a plan, confirm it, and start drafting.
