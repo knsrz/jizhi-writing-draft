@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { HashRouter, Route, Routes } from 'react-router-dom';
 import { Sidebar } from './components/ui/sidebar';
 import HistoryPage from './pages/History';
 import KnowledgePage from './pages/Knowledge';
@@ -8,7 +8,7 @@ import WritingPage from './pages/Writing';
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <div className="flex h-screen overflow-hidden bg-[#eef4fb] text-slate-950">
         <Sidebar />
         <main className="min-w-0 flex-1 overflow-auto">
@@ -22,6 +22,6 @@ export default function App() {
           </Routes>
         </main>
       </div>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
