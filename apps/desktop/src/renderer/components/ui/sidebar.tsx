@@ -1,6 +1,6 @@
 import { History, Library, PenLine, Settings } from 'lucide-react';
-import appIcon from '../../assets/app-icon.svg';
 import { NavLink, useLocation } from 'react-router-dom';
+import appIcon from '../../assets/app-icon.png';
 import { shouldResetWritingNav } from '../../pages/writing-navigation';
 import { useWritingStore } from '../../store/writing';
 

@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="./apps/desktop/src/renderer/assets/app-icon.svg" alt="Jizhi Writing" width="96" height="96" />
+  <img src="./apps/desktop/src/renderer/assets/app-icon.png" alt="Jizhi Writing" width="96" height="96" />
 
   <h1>Jizhi Writing</h1>
 

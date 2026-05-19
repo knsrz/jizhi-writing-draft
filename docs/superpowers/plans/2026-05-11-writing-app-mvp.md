@@ -22,7 +22,7 @@
 - [ ] **Step 1: 创建工作区根 package.json**
 
 ```bash
-cd "/Users/knsrz/Documents/开源项目/极致写作_Draft"
+cd "/Users/knsrz/Documents/开源项目/极致写作"
 cat > package.json << 'EOF'
 {
   "name": "writing-app",
@@ -3369,7 +3369,7 @@ export default function App() {
 - [ ] **Step 1: 安装所有依赖**
 
 ```bash
-cd "/Users/knsrz/Documents/开源项目/极致写作_Draft"
+cd "/Users/knsrz/Documents/开源项目/极致写作"
 pnpm install
 ```
 
