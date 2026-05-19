@@ -27,6 +27,7 @@ export function buildConnectionTestConfig(
     kind,
     baseUrl: input.baseUrl || saved?.baseUrl || 'https://api.openai.com/v1',
     apiKey: input.apiKey?.trim() || saved?.apiKey || '',
-    model: inputModel || savedModel || (kind === 'embedding' ? 'text-embedding-3-small' : 'gpt-4o'),
+    model:
+      inputModel || savedModel || (kind === 'embedding' ? 'text-embedding-3-small' : 'gpt-5.1'),
   };
 }

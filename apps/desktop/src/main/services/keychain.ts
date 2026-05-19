@@ -132,7 +132,7 @@ export const keychain = {
       provider,
       baseUrl,
       apiKey,
-      writingModel: writingModel || 'gpt-4o',
+      writingModel: writingModel || 'gpt-5.1',
       embeddingModel: embeddingModel || 'text-embedding-3-small',
     };
   },
@@ -165,7 +165,7 @@ export const keychain = {
       provider,
       baseUrl,
       apiKey: decryptApiKey(map, 'writing'),
-      model: map.get('writing_model') || 'gpt-4o',
+      model: map.get('writing_model') || 'gpt-5.1',
     };
   },
 

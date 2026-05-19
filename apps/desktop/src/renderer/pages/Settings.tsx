@@ -3,6 +3,7 @@ import {
   Brain,
   CheckCircle2,
   Database,
+  ExternalLink,
   KeyRound,
   PlugZap,
   RotateCw,
@@ -14,7 +15,9 @@ import { useEffect, useMemo, useState } from 'react';
 import {
   applyEmbeddingProviderPreset,
   applyWritingProviderPreset,
-  PROVIDER_PRESETS,
+  EMBEDDING_PROVIDER_PRESETS,
+  type ProviderPreset,
+  WRITING_PROVIDER_PRESETS,
 } from '../lib/provider-presets';
 import { cn } from '../lib/utils';
 import { useSettingsStore } from '../store/settings';
@@ -130,8 +133,9 @@ export default function SettingsPage() {
         <section className="min-w-0">
           {activeSection === 'writing' ? (
             <EndpointSettings
+              kind="writing"
               title={activeMeta?.title ?? '模型与 API 配置'}
-              description="写作模型可以使用 OpenAI、DeepSeek、OpenRouter 或任意兼容接口。"
+              description="写作模型可以使用 OpenAI、Gemini、DeepSeek、阿里百炼、火山方舟、OpenRouter 或任意兼容接口。"
               endpoint={writing}
               apiKey={writingApiKey}
               apiKeyPlaceholder={writing.apiKeySet ? '已安全保存，输入新 Key 可覆盖' : 'sk-...'}
@@ -139,7 +143,8 @@ export default function SettingsPage() {
               testing={testing === 'writing'}
               testResult={testResult.writing}
               modelLabel="写作模型"
-              modelPlaceholder="gpt-4o"
+              modelPlaceholder="gpt-5.1"
+              presets={WRITING_PROVIDER_PRESETS}
               activeModelId={createModelEntry('writing', writing).id}
               onApiKeyChange={setWritingApiKey}
               onPresetSelect={(providerId) =>
@@ -158,8 +163,9 @@ export default function SettingsPage() {
             />
           ) : (
             <EndpointSettings
+              kind="embedding"
               title={activeMeta?.title ?? '嵌入模型设置'}
-              description="嵌入模型可以独立选择厂商，知识库向量化和检索只使用这里的配置。"
+              description="嵌入模型只显示提供 embedding 的厂商；知识库向量化和检索只使用这里的配置。"
               endpoint={embedding}
               apiKey={embeddingApiKey}
               apiKeyPlaceholder={embedding.apiKeySet ? '已安全保存，输入新 Key 可覆盖' : 'sk-...'}
@@ -168,6 +174,7 @@ export default function SettingsPage() {
               testResult={testResult.embedding}
               modelLabel="嵌入模型"
               modelPlaceholder="text-embedding-3-small"
+              presets={EMBEDDING_PROVIDER_PRESETS}
               activeModelId={createModelEntry('embedding', embedding).id}
               onApiKeyChange={setEmbeddingApiKey}
               onPresetSelect={(providerId) =>
@@ -192,6 +199,7 @@ export default function SettingsPage() {
 }
 
 function EndpointSettings({
+  kind,
   title,
   description,
   endpoint,
@@ -202,6 +210,7 @@ function EndpointSettings({
   testResult,
   modelLabel,
   modelPlaceholder,
+  presets,
   activeModelId,
   onApiKeyChange,
   onPresetSelect,
@@ -210,6 +219,7 @@ function EndpointSettings({
   onSave,
   onTest,
 }: {
+  kind: SettingsSection;
   title: string;
   description: string;
   endpoint: {
@@ -226,6 +236,7 @@ function EndpointSettings({
   testResult: { success: boolean; latencyMs: number; error?: string } | null;
   modelLabel: string;
   modelPlaceholder: string;
+  presets: ProviderPreset[];
   activeModelId: string;
   onApiKeyChange: (value: string) => void;
   onPresetSelect: (providerId: string) => void;
@@ -235,10 +246,22 @@ function EndpointSettings({
   onTest: () => void;
 }) {
   const selectedPreset = useMemo(
-    () =>
-      PROVIDER_PRESETS.find((preset) => preset.id === endpoint.provider) ?? PROVIDER_PRESETS.at(-1),
-    [endpoint.provider],
+    () => presets.find((preset) => preset.id === endpoint.provider),
+    [endpoint.provider, presets],
   );
+  const fallbackPreset = useMemo(() => presets.find((preset) => preset.id === 'custom'), [presets]);
+  const visiblePreset = selectedPreset ?? fallbackPreset;
+  const modelOptions = useMemo(() => {
+    if (!visiblePreset || visiblePreset.id === 'custom') return [];
+
+    const models =
+      kind === 'embedding'
+        ? (visiblePreset.embeddingModels ?? [visiblePreset.embeddingModel])
+        : (visiblePreset.writingModels ?? [visiblePreset.writingModel]);
+
+    return models.filter(Boolean);
+  }, [kind, visiblePreset]);
+  const modelListId = `${kind}-${visiblePreset?.id ?? 'custom'}-models`;
   const providerModels = useMemo(
     () => filterModelEntriesForEndpoint(endpoint.models, endpoint),
     [endpoint],
@@ -253,34 +276,39 @@ function EndpointSettings({
         </div>
 
         <div className="space-y-2">
-          {PROVIDER_PRESETS.map((preset) => {
+          {presets.map((preset) => {
             const isActive =
               preset.id === endpoint.provider || (preset.id === 'custom' && !selectedPreset);
             return (
-              <button
-                type="button"
+              <div
                 key={preset.id}
-                onClick={() => onPresetSelect(preset.id)}
                 className={cn(
-                  'w-full rounded-2xl border border-slate-200/80 bg-white p-4 text-left transition-colors',
+                  'w-full rounded-2xl border border-slate-200/80 bg-white p-4 transition-colors',
                   isActive
                     ? 'border-blue-300 bg-white ring-2 ring-blue-100'
                     : 'hover:border-blue-200 hover:bg-blue-50/50',
                 )}
               >
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-semibold text-slate-900">{preset.name}</span>
-                      <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] text-slate-500">
-                        {preset.badge}
-                      </span>
+                <button
+                  type="button"
+                  onClick={() => onPresetSelect(preset.id)}
+                  className="w-full text-left"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-semibold text-slate-900">{preset.name}</span>
+                        <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] text-slate-500">
+                          {preset.badge}
+                        </span>
+                      </div>
+                      <p className="mt-2 text-xs leading-5 text-slate-500">{preset.description}</p>
                     </div>
-                    <p className="mt-2 text-xs leading-5 text-slate-500">{preset.description}</p>
+                    {isActive && <CheckCircle2 className="h-4 w-4 shrink-0 text-blue-600" />}
                   </div>
-                  {isActive && <CheckCircle2 className="h-4 w-4 shrink-0 text-blue-600" />}
-                </div>
-              </button>
+                </button>
+                {preset.id !== 'custom' && <ProviderResourceLinks preset={preset} />}
+              </div>
             );
           })}
         </div>
@@ -297,6 +325,11 @@ function EndpointSettings({
               <p className="text-sm text-slate-500">{description}</p>
             </div>
           </div>
+          {visiblePreset && visiblePreset.id !== 'custom' && (
+            <div className="mt-4 rounded-lg border border-blue-100 bg-blue-50/60 px-3 py-2 text-sm text-blue-800">
+              查看 {visiblePreset.name} 文档和模型列表，获取 Base URL、模型名称和 API Key 配置说明。
+            </div>
+          )}
         </div>
 
         <div className="grid grid-cols-2 gap-4">
@@ -315,11 +348,19 @@ function EndpointSettings({
             <span className="mb-1.5 block text-sm font-medium text-slate-700">{modelLabel}</span>
             <input
               type="text"
+              list={modelOptions.length > 0 ? modelListId : undefined}
               value={endpoint.model}
               onChange={(e) => onChange({ model: e.target.value })}
               className="w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
               placeholder={modelPlaceholder}
             />
+            {modelOptions.length > 0 && (
+              <datalist id={modelListId}>
+                {modelOptions.map((model) => (
+                  <option key={model} value={model} />
+                ))}
+              </datalist>
+            )}
           </label>
 
           <label className="col-span-2 block">
@@ -426,6 +467,31 @@ function EndpointSettings({
           )}
         </div>
       </div>
+    </div>
+  );
+}
+
+function ProviderResourceLinks({ preset }: { preset: ProviderPreset }) {
+  return (
+    <div className="mt-3 flex flex-wrap gap-2 border-t border-slate-100 pt-3 text-xs">
+      <a
+        href={preset.links.docs}
+        target="_blank"
+        rel="noreferrer"
+        className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-slate-600 transition hover:bg-blue-100 hover:text-blue-700"
+      >
+        <ExternalLink className="h-3 w-3" />
+        查看 {preset.name} 文档
+      </a>
+      <a
+        href={preset.links.models}
+        target="_blank"
+        rel="noreferrer"
+        className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-slate-600 transition hover:bg-blue-100 hover:text-blue-700"
+      >
+        <ExternalLink className="h-3 w-3" />
+        模型列表
+      </a>
     </div>
   );
 }

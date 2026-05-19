@@ -40,7 +40,7 @@
 | 分段生成 | 按章节逐段生成正文，并实时回传当前章节和进度。 |
 | 子 Agent 润色 | 每段完成后进入事实校正和语言润色流程，降低长文质量漂移。 |
 | 本地知识库 | 支持 PDF、DOCX、TXT、Markdown 上传、解析、切片、向量化和检索。 |
-| OpenAI 兼容模型 | 支持 OpenAI、DeepSeek、SiliconFlow、OpenRouter、Ollama 和自定义兼容接口。 |
+| OpenAI 兼容模型 | 支持 OpenAI、Gemini、DeepSeek、阿里百炼、SiliconFlow、OpenRouter、Ollama 等主流兼容接口。 |
 | 安全配置 | 写作模型和嵌入模型分开配置，API Key 存入系统安全存储，不写入明文数据库。 |
 | 历史版本 | 写作项目、生成结果和后续修订会保存为版本记录。 |
 | 文档导出 | 支持 Markdown 和 DOCX 导出。 |
@@ -114,8 +114,8 @@ pnpm dev
 ### 第一次运行
 
 1. 打开“设置”页面。
-2. 配置写作模型：选择 OpenAI、DeepSeek、SiliconFlow、OpenRouter、Ollama 或自定义 OpenAI 兼容接口。
-3. 配置嵌入模型：知识库上传、向量化和检索依赖该配置。
+2. 配置写作模型：选择 OpenAI、Gemini、DeepSeek、阿里百炼、SiliconFlow、OpenRouter、Ollama 或自定义 OpenAI 兼容接口。
+3. 配置嵌入模型：选择 OpenAI、Gemini、SiliconFlow、Jina、Voyage AI、Ollama 等支持 embedding 的接口。
 4. 点击连接测试，确认模型可用。
 5. 可选：创建知识库并上传 PDF、DOCX、TXT 或 Markdown 文件。
 6. 回到写作页，输入需求，生成规划，确认后开始写作。

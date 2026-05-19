@@ -45,7 +45,7 @@ interface SettingsState {
 const defaultWriting: EndpointState = {
   provider: 'openai',
   baseUrl: 'https://api.openai.com/v1',
-  model: 'gpt-4o',
+  model: 'gpt-5.1',
   models: [],
   apiKeySet: false,
 };
