@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="极致写作是一款面向办公长文的本地 AI 写作桌面工作台，支持写作规划、知识库 RAG、分段生成、事实校正、润色和 DOCX 导出。"
+    />
+    <meta name="theme-color" content="#ffffff" />
+    <meta property="og:title" content="极致写作 - 本地 AI 写作工作台" />
+    <meta
+      property="og:description"
+      content="从资料整理、写作规划、分段生成到润色导出，把办公长文写作流程收进一个克制、专业、可自配置的桌面客户端。"
+    />
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:image"
+      content="https://knsrz.github.io/jizhi-writing-draft/assets/app-icon.png"
+    />
+    <link rel="canonical" href="https://knsrz.github.io/jizhi-writing-draft/" />
+    <title>极致写作 - 本地 AI 写作工作台</title>
+    <link rel="icon" href="assets/app-icon.png" />
+    <link rel="apple-touch-icon" href="assets/app-icon.png" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="nav-shell" aria-label="主导航">
+        <a class="brand" href="#top" aria-label="极致写作首页">
+          <img src="assets/app-icon.png" alt="" width="40" height="40" />
+          <span>极致写作</span>
+        </a>
+        <div class="nav-meta" aria-label="项目状态">
+          <a href="https://github.com/knsrz/jizhi-writing-draft" rel="noreferrer">GitHub</a>
+          <span>v0.1.1</span>
+        </div>
+        <div class="nav-links">
+          <a href="#features">能力</a>
+          <a href="#workflow">流程</a>
+          <a href="#architecture">架构</a>
+          <a href="#download">下载</a>
+        </div>
+        <a
+          class="nav-download"
+          href="https://github.com/knsrz/jizhi-writing-draft/releases/tag/v0.1.1"
+          rel="noreferrer"
+        >
+          <svg aria-hidden="true" viewBox="0 0 24 24">
+            <path d="M12 3v12m0 0 5-5m-5 5-5-5M5 21h14" />
+          </svg>
+          下载
+        </a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero-section" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow">本地优先 · 多模型 · 开源可自配置</p>
+          <h1 id="hero-title">你的本地 AI 写作工作台</h1>
+          <p class="hero-subtitle">
+            <span>写作规划</span> · <span>知识库 RAG</span> · 分段生成 · 润色导出
+          </p>
+          <div class="hero-actions" aria-label="主要操作">
+            <a
+              class="button button-primary"
+              href="https://github.com/knsrz/jizhi-writing-draft/releases/tag/v0.1.1"
+              rel="noreferrer"
+            >
+              <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M12 3v12m0 0 5-5m-5 5-5-5M5 21h14" />
+              </svg>
+              下载 v0.1.1
+            </a>
+            <a
+              class="button button-secondary"
+              href="https://github.com/knsrz/jizhi-writing-draft"
+              rel="noreferrer"
+            >
+              查看源码
+              <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M5 12h14m-6-6 6 6-6 6" />
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="hero-visual" aria-label="极致写作桌面界面预览">
+          <div class="mode-switcher" aria-hidden="true">
+            <span class="active">
+              <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M4 5h16v14H4zM8 9h8M8 13h5" />
+              </svg>
+              写作规划
+            </span>
+            <span>
+              <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M5 7h14M5 12h14M5 17h10" />
+              </svg>
+              知识库
+            </span>
+            <span>
+              <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M12 4v12m0 0 4-4m-4 4-4-4M5 20h14" />
+              </svg>
+              导出
+            </span>
+            <span>
+              <svg aria-hidden="true" viewBox="0 0 24 24">
+                <path d="M7 8h10M7 16h10M5 12h14" />
+              </svg>
+              多模型
+            </span>
+          </div>
+
+          <div class="app-window">
+            <div class="window-bar">
+              <div class="traffic-lights" aria-hidden="true">
+                <span></span><span></span><span></span>
+              </div>
+              <div class="window-tab">极致写作</div>
+              <div class="window-tools" aria-hidden="true">
+                <span></span><span></span>
+              </div>
+            </div>
+            <div class="app-layout">
+              <aside class="sidebar-preview" aria-hidden="true">
+                <div class="sidebar-title">Writing</div>
+                <div class="side-item active">项目方案</div>
+                <div class="side-item">调研报告</div>
+                <div class="side-item">会议纪要</div>
+                <div class="side-item">制度文档</div>
+                <div class="side-spacer"></div>
+                <div class="side-item small">知识库</div>
+                <div class="side-item small">历史</div>
+                <div class="side-item small">设置</div>
+              </aside>
+
+              <section class="workspace-preview">
+                <div class="workspace-topline">
+                  <span class="status-dot"></span>
+                  正在生成年度工作总结
+                </div>
+                <h2>先规划，再分段写作</h2>
+                <div class="prompt-box">
+                  请结合部门项目资料，生成一篇正式、清晰、可提交的年度工作总结。
+                </div>
+                <div class="plan-grid">
+                  <article>
+                    <span>01</span>
+                    <strong>梳理重点成果</strong>
+                    <p>从知识库中提取项目进度、业务指标和关键事件。</p>
+                  </article>
+                  <article>
+                    <span>02</span>
+                    <strong>分段生成正文</strong>
+                    <p>按章节逐段起草，实时回传当前章节和完成进度。</p>
+                  </article>
+                  <article>
+                    <span>03</span>
+                    <strong>事实校正与润色</strong>
+                    <p>结合检索资料降低事实漂移，并统一正式文风。</p>
+                  </article>
+                </div>
+                <div class="progress-row" aria-hidden="true">
+                  <span style="width: 72%"></span>
+                </div>
+              </section>
+
+              <aside class="context-preview" aria-hidden="true">
+                <div class="context-card">
+                  <span>知识库引用</span>
+                  <strong>4 份资料命中</strong>
+                  <p>项目周报、会议纪要、竞品报告、制度模板</p>
+                </div>
+                <div class="context-card accent">
+                  <span>输出格式</span>
+                  <strong>Markdown / DOCX</strong>
+                  <p>生成后可继续编辑、归档或提交。</p>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="feature-section" id="features" aria-labelledby="features-title">
+        <div class="section-heading">
+          <p class="eyebrow">Core Features</p>
+          <h2 id="features-title">围绕办公长文的完整闭环</h2>
+        </div>
+        <div class="feature-grid">
+          <article>
+            <span class="feature-index">01</span>
+            <h3>写作计划可编辑</h3>
+            <p>先生成结构化写作计划，再由用户确认或调整，避免长文直接生成带来的跑题和失控。</p>
+          </article>
+          <article>
+            <span class="feature-index">02</span>
+            <h3>本地知识库支撑</h3>
+            <p>解析 PDF、DOCX、TXT、Markdown，本地切片、向量化和检索，让资料成为写作依据。</p>
+          </article>
+          <article>
+            <span class="feature-index">03</span>
+            <h3>分段生成与子 Agent</h3>
+            <p>按章节起草，并在每段完成后进行事实校正和语言润色，降低长文质量漂移。</p>
+          </article>
+          <article>
+            <span class="feature-index">04</span>
+            <h3>多模型自配置</h3>
+            <p>支持 OpenAI、Gemini、DeepSeek、阿里百炼、SiliconFlow、OpenRouter、Ollama 等兼容接口。</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="workflow-section" id="workflow" aria-labelledby="workflow-title">
+        <div class="section-heading">
+          <p class="eyebrow">Workflow</p>
+          <h2 id="workflow-title">从资料到交付的一条写作流水线</h2>
+        </div>
+        <ol class="workflow-list">
+          <li>
+            <span>输入需求</span>
+            <p>填写主题、文体、风格、字数和知识库范围。</p>
+          </li>
+          <li>
+            <span>确认规划</span>
+            <p>查看 AI 生成的大纲，按业务判断调整结构。</p>
+          </li>
+          <li>
+            <span>分段写作</span>
+            <p>逐章生成正文，并持续显示当前进度。</p>
+          </li>
+          <li>
+            <span>校正润色</span>
+            <p>结合资料校正事实，再按目标文风统一表达。</p>
+          </li>
+          <li>
+            <span>导出文档</span>
+            <p>保存历史版本，导出 Markdown 或 DOCX。</p>
+          </li>
+        </ol>
+      </section>
+
+      <section class="architecture-section" id="architecture" aria-labelledby="architecture-title">
+        <div class="section-heading">
+          <p class="eyebrow">Architecture</p>
+          <h2 id="architecture-title">Electron + React 的本地桌面架构</h2>
+        </div>
+        <div class="architecture-grid">
+          <article>
+            <h3>Desktop</h3>
+            <p>Electron 主进程负责 IPC、SQLite、文件导入导出和安全存储，Renderer 提供写作工作台。</p>
+          </article>
+          <article>
+            <h3>Agent</h3>
+            <p>规划、写作、事实校正、润色和进度回调由独立 package 编排，便于测试和复用。</p>
+          </article>
+          <article>
+            <h3>Knowledge</h3>
+            <p>本地解析、切片、embedding、LanceDB 检索，每个知识库独立存储，减少资料污染。</p>
+          </article>
+          <article>
+            <h3>AI Providers</h3>
+            <p>写作模型和嵌入模型分离配置，API Key 进入系统安全存储，不写入明文数据库。</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="download-section" id="download" aria-labelledby="download-title">
+        <div class="download-copy">
+          <p class="eyebrow">Download</p>
+          <h2 id="download-title">下载极致写作 v0.1.1</h2>
+          <p>
+            当前发布提供 macOS Apple Silicon 安装包与 Windows x64 安装程序。源码采用 AGPL-3.0
+            协议开放。
+          </p>
+        </div>
+        <div class="download-actions">
+          <a
+            class="download-card"
+            href="https://github.com/knsrz/jizhi-writing-draft/releases/download/v0.1.1/Jizhi-Writing-0.1.1-mac-arm64.dmg"
+            rel="noreferrer"
+          >
+            <span>macOS</span>
+            <strong>Apple Silicon DMG</strong>
+          </a>
+          <a
+            class="download-card"
+            href="https://github.com/knsrz/jizhi-writing-draft/releases/download/v0.1.1/Jizhi-Writing-0.1.1-win-x64.exe"
+            rel="noreferrer"
+          >
+            <span>Windows</span>
+            <strong>x64 Installer</strong>
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <span>极致写作</span>
+      <a href="https://github.com/knsrz/jizhi-writing-draft" rel="noreferrer">GitHub</a>
+      <a href="https://github.com/knsrz/jizhi-writing-draft/releases/tag/v0.1.1" rel="noreferrer">
+        Releases
+      </a>
+    </footer>
+  </body>
+</html>
