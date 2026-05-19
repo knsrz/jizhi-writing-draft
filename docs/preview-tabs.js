@@ -1,4 +1,19 @@
 (function initPreviewTabsBundle(root) {
+  const RELEASE_DOWNLOADS = {
+    mac: {
+      ariaLabel: '下载极致写作 macOS Apple Silicon 安装包',
+      href: 'https://github.com/knsrz/jizhi-writing/releases/download/v0.1.1/Jizhi-Writing-0.1.1-mac-arm64.dmg',
+    },
+    windows: {
+      ariaLabel: '下载极致写作 Windows x64 安装程序',
+      href: 'https://github.com/knsrz/jizhi-writing/releases/download/v0.1.1/Jizhi-Writing-0.1.1-win-x64.exe',
+    },
+    fallback: {
+      ariaLabel: '查看极致写作发布页面',
+      href: 'https://github.com/knsrz/jizhi-writing/releases/tag/v0.1.1',
+    },
+  };
+
   const PREVIEW_TABS = {
     plan: {
       id: 'plan',
@@ -148,6 +163,38 @@
     }
   }
 
+  function readPlatform(navigatorLike) {
+    const nav = navigatorLike ?? root.navigator ?? {};
+    const userAgentDataPlatform = nav.userAgentData?.platform ?? '';
+    const platform = nav.platform ?? '';
+    const userAgent = nav.userAgent ?? '';
+    return `${userAgentDataPlatform} ${platform} ${userAgent}`.toLowerCase();
+  }
+
+  function resolveDownloadTarget(navigatorLike) {
+    const platformText = readPlatform(navigatorLike);
+
+    if (platformText.includes('win')) {
+      return RELEASE_DOWNLOADS.windows;
+    }
+
+    if (platformText.includes('mac')) {
+      return RELEASE_DOWNLOADS.mac;
+    }
+
+    return RELEASE_DOWNLOADS.fallback;
+  }
+
+  function initPlatformDownloads(doc, navigatorLike) {
+    const rootDocument = doc ?? document;
+    const downloadTarget = resolveDownloadTarget(navigatorLike);
+
+    Array.from(rootDocument.querySelectorAll('[data-platform-download]')).forEach((link) => {
+      link.setAttribute('href', downloadTarget.href);
+      link.setAttribute('aria-label', downloadTarget.ariaLabel);
+    });
+  }
+
   function setChildText(element, selector, text) {
     if (element) {
       setText(element.querySelector(selector), text);
@@ -261,8 +308,11 @@
 
   const api = {
     PREVIEW_TABS,
+    RELEASE_DOWNLOADS,
     activatePreviewTab,
+    initPlatformDownloads,
     initPreviewTabs,
+    resolveDownloadTarget,
   };
 
   if (typeof module === 'object' && module.exports) {
@@ -271,11 +321,16 @@
 
   root.JizhiPreviewTabs = api;
 
+  function initLandingPage(doc) {
+    initPreviewTabs(doc);
+    initPlatformDownloads(doc);
+  }
+
   if (typeof document !== 'undefined') {
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', () => initPreviewTabs(document));
+      document.addEventListener('DOMContentLoaded', () => initLandingPage(document));
     } else {
-      initPreviewTabs(document);
+      initLandingPage(document);
     }
   }
 })(typeof window !== 'undefined' ? window : globalThis);

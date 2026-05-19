@@ -68,6 +68,10 @@ class FakeElement {
     return this.children.get(selector) ?? null;
   }
 
+  getAttribute(name) {
+    return this.attributes[name];
+  }
+
   setAttribute(name, value) {
     this.attributes[name] = String(value);
   }
@@ -128,6 +132,24 @@ function createPreviewDocument() {
   };
 }
 
+function createDownloadDocument() {
+  const buttons = [
+    new FakeElement({ dataset: { platformDownload: '' } }),
+    new FakeElement({ dataset: { platformDownload: '' } }),
+  ];
+
+  return {
+    buttons,
+    querySelectorAll(selector) {
+      if (selector === '[data-platform-download]') {
+        return buttons;
+      }
+
+      return [];
+    },
+  };
+}
+
 describe('landing page preview tabs', () => {
   it('renders the top preview labels as interactive tab buttons', () => {
     const html = readLandingPage();
@@ -164,5 +186,31 @@ describe('landing page preview tabs', () => {
     expect(fakeDocument.contexts[0].querySelector('[data-preview-context-title]').textContent).toBe(
       previewTabs.PREVIEW_TABS.knowledge.context[0].title,
     );
+  });
+
+  it('points primary download buttons to the current platform installer', () => {
+    const previewTabs = loadPreviewTabs();
+
+    if (!previewTabs) {
+      return;
+    }
+
+    const fakeDocument = createDownloadDocument();
+
+    previewTabs.initPlatformDownloads(fakeDocument, {
+      platform: 'MacIntel',
+      userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)',
+    });
+
+    expect(fakeDocument.buttons[0].getAttribute('href')).toContain('mac-arm64.dmg');
+    expect(fakeDocument.buttons[1].getAttribute('href')).toContain('mac-arm64.dmg');
+
+    previewTabs.initPlatformDownloads(fakeDocument, {
+      platform: 'Win32',
+      userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+    });
+
+    expect(fakeDocument.buttons[0].getAttribute('href')).toContain('win-x64.exe');
+    expect(fakeDocument.buttons[1].getAttribute('href')).toContain('win-x64.exe');
   });
 });
